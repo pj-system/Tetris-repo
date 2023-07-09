@@ -1,6 +1,7 @@
 import sys
-
 import pygame
+
+from game_blocks import Block
 
 
 class Tetris:
@@ -11,12 +12,13 @@ class Tetris:
         pygame.init
 
         # Game window size
-        self.window_Height = 800
-        self.window_Width = 800
+        self.WINDOW_HEIGHT = 800
+        self.WINDOW_WIDTH = 800
 
-        #
+        # intitalise game window
         self.screen = pygame.display.set_mode(
-            (self.window_Height, self.window_Width))
+            (self.WINDOW_HEIGHT, self.WINDOW_WIDTH))
+        pygame.display.set_caption("TETRIS")
 
         self.clock = pygame.time.Clock()
 
@@ -26,12 +28,14 @@ class Tetris:
             # Event Check
             self.check_events()
 
-            # Logic
+            # Game Logic
+            # tbc
 
-            # window base
-            self.screen.fill((255, 255, 255))
+            # window background and UI
+            self.screen.fill((0, 0, 0))
 
             # Graphics render
+            # tbc
 
             # Refresh display at 60fps
             pygame.display.flip()
@@ -42,6 +46,9 @@ class Tetris:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q:
+                    sys.exit()
 
 
 game = Tetris()
