@@ -12,7 +12,7 @@ class Tetris:
         pygame.init
 
         # Game window size
-        self.WINDOW_HEIGHT = 800
+        self.WINDOW_HEIGHT = 880
         self.WINDOW_WIDTH = 800
 
         # intitalise game window
