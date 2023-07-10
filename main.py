@@ -2,6 +2,7 @@ import sys
 import pygame
 
 from game_blocks import Block
+from game_space import GameSpace
 
 
 class Tetris:
@@ -17,8 +18,10 @@ class Tetris:
 
         # intitalise game window
         self.screen = pygame.display.set_mode(
-            (self.WINDOW_HEIGHT, self.WINDOW_WIDTH))
+            (self.WINDOW_WIDTH, self.WINDOW_HEIGHT))
         pygame.display.set_caption("TETRIS")
+
+        self.play_field = GameSpace(self)
 
         self.clock = pygame.time.Clock()
 
@@ -35,10 +38,11 @@ class Tetris:
             self.screen.fill((0, 0, 0))
 
             # Graphics render
-            # tbc
+            self.play_field.draw()
 
             # Refresh display at 60fps
             pygame.display.flip()
+
             self.clock.tick(60)
 
     def check_events(self):

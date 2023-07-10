@@ -4,16 +4,27 @@ import pygame
 class GameSpace:
     """Class managing he game grid on which blocks land"""
 
-    def __init__(self, tetris) -> None:
+    def __init__(self, tet_game) -> None:
+
+        # grid layout
         self.GRID_HEIGHT = 22
         self.GRID_WIDTH = 10
-        self.screen = tetris.screen
+        self.CELL_SIZE = 40
+
+        self.screen = tet_game.screen
+        self.WINDOW_HEIGHT = tet_game.WINDOW_HEIGHT
+        self.WINDOW_WIDTH = tet_game.WINDOW_WIDTH
 
         # set of occupied grid cells
         self.filled = set()
 
     def draw(self):
-        pass
+        for row in range(0, self.WINDOW_HEIGHT, self.CELL_SIZE):
+
+            # note to self - I don't like how this is atm, FIX LATER!!!
+            for col in range(int(self.WINDOW_WIDTH/4), int(self.WINDOW_WIDTH/4)*3, self.CELL_SIZE):
+                cell = pygame.Rect(col, row, self.CELL_SIZE, self.CELL_SIZE)
+                pygame.draw.rect(self.screen, (3, 60, 89), cell, 2)
 
     def check_clear(self):
         """Checks if Tetris has been achieved"""
