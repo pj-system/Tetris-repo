@@ -19,6 +19,7 @@ class GameSpace:
         self.filled = set()
 
     def draw(self):
+        """Class Drawing the game grid to the screen"""
         for row in range(0, self.WINDOW_HEIGHT, self.CELL_SIZE):
 
             # note to self - I don't like how this is atm, FIX LATER!!!

@@ -22,6 +22,7 @@ class Tetris:
         pygame.display.set_caption("TETRIS")
 
         self.play_field = GameSpace(self)
+        self.block = Block()
 
         self.clock = pygame.time.Clock()
 
@@ -32,6 +33,7 @@ class Tetris:
             self.check_events()
 
             # Game Logic
+            self.block.update
             # tbc
 
             # window background and UI
@@ -39,6 +41,7 @@ class Tetris:
 
             # Graphics render
             self.play_field.draw()
+            self.block.draw()
 
             # Refresh display at 60fps
             pygame.display.flip()
