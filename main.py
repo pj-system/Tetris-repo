@@ -22,7 +22,7 @@ class Tetris:
         pygame.display.set_caption("TETRIS")
 
         self.play_field = GameSpace(self)
-        self.block = Block()
+        self.block = Block(self)
 
         self.clock = pygame.time.Clock()
 

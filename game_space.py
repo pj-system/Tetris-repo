@@ -11,21 +11,31 @@ class GameSpace:
         self.GRID_WIDTH = 10
         self.CELL_SIZE = 40
 
+        # screen vairables from main
         self.screen = tet_game.screen
         self.WINDOW_HEIGHT = tet_game.WINDOW_HEIGHT
         self.WINDOW_WIDTH = tet_game.WINDOW_WIDTH
+
+        self.grid = [[(0, 200, 0) for col in range(self.GRID_WIDTH)]
+                     for row in range(self.GRID_HEIGHT)]
 
         # set of occupied grid cells
         self.filled = set()
 
     def draw(self):
         """Class Drawing the game grid to the screen"""
-        for row in range(0, self.WINDOW_HEIGHT, self.CELL_SIZE):
 
+        grid_row = 0
+
+        for row in range(0, self.WINDOW_HEIGHT, self.CELL_SIZE):
+            grid_col = 0
             # note to self - I don't like how this is atm, FIX LATER!!!
             for col in range(int(self.WINDOW_WIDTH/4), int(self.WINDOW_WIDTH/4)*3, self.CELL_SIZE):
                 cell = pygame.Rect(col, row, self.CELL_SIZE, self.CELL_SIZE)
-                pygame.draw.rect(self.screen, (3, 60, 89), cell, 2)
+                pygame.draw.rect(
+                    self.screen, self.grid[grid_row][grid_col], cell, 2)
+                grid_col += 1
+            grid_col += 1
 
     def check_clear(self):
         """Checks if Tetris has been achieved"""

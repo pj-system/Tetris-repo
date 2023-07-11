@@ -38,8 +38,8 @@ class Block:
     def rotate(self):
         pass
 
-    def draw():
+    def draw(self):
         pass
 
-    def update():
+    def update(self):
         pass
