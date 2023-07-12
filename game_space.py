@@ -13,10 +13,11 @@ class GameSpace:
 
         # screen vairables from main
         self.screen = tet_game.screen
+        self.screen_rect = tet_game.screen.get_rect()
         self.WINDOW_HEIGHT = tet_game.WINDOW_HEIGHT
         self.WINDOW_WIDTH = tet_game.WINDOW_WIDTH
 
-        self.grid = [[(0, 200, 0) for col in range(self.GRID_WIDTH)]
+        self.grid = [[(0, 0, 0) for col in range(self.GRID_WIDTH)]
                      for row in range(self.GRID_HEIGHT)]
 
         # set of occupied grid cells
@@ -27,15 +28,31 @@ class GameSpace:
 
         grid_row = 0
 
+        # determining draw range for columns; grind in the centre of the screen
+        # left (start):
+        col_draw_range_l = int(self.screen_rect.center[0] -
+                               (self.GRID_WIDTH/2)*self.CELL_SIZE)
+        # right (limit)
+        col_draw_range_r = int(self.screen_rect.center[0] +
+                               (self.GRID_WIDTH/2)*self.CELL_SIZE)
+
+        # draw each cell of the grid in the appropriate colour
         for row in range(0, self.WINDOW_HEIGHT, self.CELL_SIZE):
             grid_col = 0
-            # note to self - I don't like how this is atm, FIX LATER!!!
-            for col in range(int(self.WINDOW_WIDTH/4), int(self.WINDOW_WIDTH/4)*3, self.CELL_SIZE):
+            for col in range(col_draw_range_l, col_draw_range_r, self.CELL_SIZE):
                 cell = pygame.Rect(col, row, self.CELL_SIZE, self.CELL_SIZE)
                 pygame.draw.rect(
-                    self.screen, self.grid[grid_row][grid_col], cell, 2)
+                    self.screen, self.grid[grid_row][grid_col], cell)
                 grid_col += 1
             grid_col += 1
+
+        # draw grid on top of the cells
+        for row in range(0, self.WINDOW_HEIGHT + self.CELL_SIZE, self.CELL_SIZE):
+            pygame.draw.line(self.screen, (255, 255, 255),
+                             (col_draw_range_l, row), (col_draw_range_r, row), 3)
+        for col in range(col_draw_range_l, col_draw_range_r + self.CELL_SIZE, self.CELL_SIZE):
+            pygame.draw.line(self.screen, (255, 255, 255),
+                             (col, 0), (col, self.WINDOW_HEIGHT), 3)
 
     def check_clear(self):
         """Checks if Tetris has been achieved"""
