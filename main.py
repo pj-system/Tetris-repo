@@ -3,6 +3,7 @@ import pygame
 
 from game_blocks import Block
 from game_space import GameSpace
+from settings import Settings
 
 
 class Tetris:
@@ -11,10 +12,10 @@ class Tetris:
     def __init__(self) -> None:
 
         pygame.init
-
+        settings = Settings()
         # Game window size
-        self.WINDOW_HEIGHT = 880
-        self.WINDOW_WIDTH = 800
+        self.WINDOW_HEIGHT = settings.WINDOW_HEIGHT
+        self.WINDOW_WIDTH = settings.WINDOW_WIDTH
 
         # intitalise game window
         self.screen = pygame.display.set_mode(
