@@ -25,6 +25,11 @@ class Tetris:
         self.play_field = GameSpace(self)
         self.block = Block(self)
 
+        # set user event to periodically lower the block and timer for block drop event
+        self.drop_rate = settings.drop_rate
+        self.drop_block = pygame.USEREVENT + 0
+        pygame.time.set_timer(self.drop_block, self.drop_rate)
+
         self.clock = pygame.time.Clock()
 
     def run_game(self):
@@ -34,15 +39,16 @@ class Tetris:
             self.check_events()
 
             # Game Logic
-            self.block.update
+
             # tbc
 
             # window background and UI
             self.screen.fill((0, 0, 0))
 
             # Graphics render
-            self.play_field.draw()
+            self.play_field.draw_board()
             self.block.draw()
+            self.play_field.draw_grid()
 
             # Refresh display at 60fps
             pygame.display.flip()
@@ -54,9 +60,25 @@ class Tetris:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
+            # Keyboard input
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_q:
                     sys.exit()
+                if event.key == pygame.K_RIGHT:
+                    self.block.move(1, self.play_field.grid)
+                if event.key == pygame.K_LEFT:
+                    self.block.move(-1, self.play_field.grid)
+            # block drop on timer
+            if event.type == self.drop_block:
+                if not self.block.update(self.play_field.grid):
+                    self._add_to_grid()
+                    self.block = Block(self)
+
+    def _add_to_grid(self):
+        """Helper method updating the grid once the block lands"""
+        for coor in self.block.shape:
+            grid_row, grid_col = coor[0], coor[1]
+            self.play_field.grid[grid_row][grid_col] = self.block.shape_color
 
 
 game = Tetris()

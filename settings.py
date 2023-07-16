@@ -18,6 +18,9 @@ class Settings():
         self.GRID_DRAW_DELTA = int(self.WINDOW_CENTER -
                                    (self.CELL_SIZE * (self.GRID_WIDTH/2)))
 
+        # speed of blocks falling down (once every x ms)
+        self.drop_rate = 500
+
 
 # x = Settings()
 # print(x.WINDOW_CENTER)
