@@ -72,6 +72,7 @@ class Tetris:
             if event.type == self.drop_block:
                 if not self.block.update(self.play_field.grid):
                     self._add_to_grid()
+                    self.play_field.check_clear()
                     self.block = Block(self)
 
     def _add_to_grid(self):

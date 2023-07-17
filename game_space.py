@@ -30,9 +30,6 @@ class GameSpace:
                      for row in range(self.GRID_HEIGHT)]
         self.grid_colour = (200, 200, 200)
 
-        # set of occupied grid cells
-        self.filled = set()
-
     def draw_board(self):
         """Draws the game board (blocks which have been played) to the screen"""
 
@@ -58,16 +55,14 @@ class GameSpace:
     def check_clear(self):
         """Checks if Tetris has been achieved"""
 
-        rows_in_play = dict()
-
         # add number of filled cells in each used row: Key = row (int), Value = no. of filled cells
-        for item in self.filled:
-            rows_in_play[item[0]] = rows_in_play.get(item[0], 0) + 1
-
-        # if filled cells > 10 then tetris achieved
-        for row in rows_in_play:
-            if row.value == 10:
-                # remove teris row cells from occupied cells set
-                for cell in self.filled():
-                    if cell[0] == row:
-                        self.filled.remove(cell)
+        for row in range(self.GRID_HEIGHT):
+            full = True
+            for col in range(self.GRID_WIDTH):
+                if self.grid[row][col] == (0, 0, 0):
+                    full = False
+                    break
+            if full == True:
+                self.grid.pop(row)
+                self.grid.insert(0, [(0, 0, 0)
+                                 for col in range(self.GRID_WIDTH)])

@@ -19,7 +19,7 @@ class Settings():
                                    (self.CELL_SIZE * (self.GRID_WIDTH/2)))
 
         # speed of blocks falling down (once every x ms)
-        self.drop_rate = 500
+        self.drop_rate = 100
 
 
 # x = Settings()
