@@ -7,14 +7,21 @@ class Block:
     """Class managing the game shapes (blocks)"""
 
     def __init__(self, tet_game) -> None:
-
+        # dict of shapes (top left corner idicated / grid location)
         self.SHAPES = {
+            # I
             1: [[1, 0], [1, 1], [1, 2], [1, 3]],
+            # J
             2: [[0, 0], [1, 0], [1, 1], [1, 2]],
+            # L
             3: [[0, 2], [1, 0], [1, 1], [1, 2]],
+            # O
             4: [[0, 1], [0, 2], [1, 1], [1, 2]],
-            5: [[0, 1], [0, 2], [1, 0], [1, 1]],
+            # S
+            5: [[0, 1], [0, 2], [1, 1], [1, 0]],
+            # Z
             6: [[0, 0], [0, 1], [1, 1], [1, 2]],
+            # T
             7: [[0, 1], [1, 0], [1, 1], [1, 2]]
         }
 
@@ -33,9 +40,9 @@ class Block:
         settings = Settings()
 
         # pick a random shape and iniciate corresponding colour
-        r_selection = random.randint(1, 7)
-        self.shape = self.SHAPES[r_selection]
-        self.shape_color = tuple(self.SHAPE_COLOURS[r_selection])
+        self.r_selection = random.randint(1, 1)
+        self.shape = self.SHAPES[self.r_selection]
+        self.shape_color = tuple(self.SHAPE_COLOURS[self.r_selection])
 
         # set render space to the main screen
         self.screen = tet_game.screen
@@ -52,7 +59,22 @@ class Block:
             self.shape[i][1] += self.loc_col
 
     def rotate(self):
-        pass
+        """Rotates the piece in play"""
+
+        # Do nothing if shape is an O
+        if self.r_selection == 4:
+            return
+
+        pivot = self.shape[2]
+        rotation_shape = []
+
+        for coor in self.shape:
+            rotation_shape.append(
+                [pivot[0] - coor[0], pivot[1] - coor[1]])
+
+        for i in range(4):
+            row, col = rotation_shape[i][0], rotation_shape[i][1]
+            self.shape[i] = [col * -1 + pivot[0], row * 1 + pivot[1]]
 
     def draw(self):
         """class responisble for drawing block currently in play onto the screen"""
@@ -103,7 +125,7 @@ class Block:
         for i in range(len(self.shape)):
             self.shape[i][1] += direction
 
-    def slam_block(self, grid):
+    def drop_block(self, grid):
         pass
 
     def speed_up(self):

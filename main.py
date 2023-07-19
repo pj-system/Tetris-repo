@@ -27,6 +27,7 @@ class Tetris:
 
         # set user event to periodically lower the block and timer for block drop event
         self.drop_rate = settings.drop_rate
+        self.accelerate_rate = settings.accelerate
         self.drop_block = pygame.USEREVENT + 0
         pygame.time.set_timer(self.drop_block, self.drop_rate)
 
@@ -61,6 +62,7 @@ class Tetris:
             if event.type == pygame.QUIT:
                 sys.exit()
             # Keyboard input
+            # key presses
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_q:
                     sys.exit()
@@ -68,6 +70,15 @@ class Tetris:
                     self.block.move(1, self.play_field.grid)
                 if event.key == pygame.K_LEFT:
                     self.block.move(-1, self.play_field.grid)
+                if event.key == pygame.K_DOWN:
+                    self._accelerate_block()
+                if event.key == pygame.K_UP:
+                    self.block.rotate()
+            # key release
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_DOWN:
+                    self._decelerate_block()
+
             # block drop on timer
             if event.type == self.drop_block:
                 if not self.block.update(self.play_field.grid):
@@ -80,6 +91,12 @@ class Tetris:
         for coor in self.block.shape:
             grid_row, grid_col = coor[0], coor[1]
             self.play_field.grid[grid_row][grid_col] = self.block.shape_color
+
+    def _accelerate_block(self):
+        pygame.time.set_timer(self.drop_block, self.accelerate_rate)
+
+    def _decelerate_block(self):
+        pygame.time.set_timer(self.drop_block, self.drop_rate)
 
 
 game = Tetris()

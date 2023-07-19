@@ -53,9 +53,9 @@ class GameSpace:
                              (col, 0), (col, self.WINDOW_HEIGHT), 3)
 
     def check_clear(self):
-        """Checks if Tetris has been achieved"""
+        """Checks if Row has been filled up and clears the row"""
 
-        # add number of filled cells in each used row: Key = row (int), Value = no. of filled cells
+        # check each row of the grid and if full clear it
         for row in range(self.GRID_HEIGHT):
             full = True
             for col in range(self.GRID_WIDTH):
