@@ -40,7 +40,7 @@ class Block:
         settings = Settings()
 
         # pick a random shape and iniciate corresponding colour
-        self.r_selection = random.randint(1, 1)
+        self.r_selection = random.randint(1, 7)
         self.shape = self.SHAPES[self.r_selection]
         self.shape_color = tuple(self.SHAPE_COLOURS[self.r_selection])
 
@@ -88,17 +88,8 @@ class Block:
             Returns True if blocked moved"""
 
         # check if block doesn't colide with existing blocks or hit the bottom
-        for i in range(len(self.shape)):
-            # column and row to be checked
-            col_check = self.shape[i][1]
-            row_check = self.shape[i][0] + 1
-
-            # check bottom
-            if row_check == self.GRID_HEIGHT:
-                return None
-            # check collsion
-            if grid[row_check][col_check] != (0, 0, 0):
-                return None
+        if not self._check_free_space(grid):
+            return None
 
         # if not at the bottom or on top of another block: move each part of the piece down 1 cell
         for i in range(len(self.shape)):
@@ -109,9 +100,9 @@ class Block:
         """ moves the block when arrow key is pressed. Needs grid array to check collisions"""
         for i in range(len(self.shape)):
 
-            # coorindate to check
+            # row coorindate to check
             next_coor = self.shape[i][1] + direction
-            # coorinate of the block on the grid
+            # row coorinate of the block on the grid
             block_coor = self.shape[i]
 
             if next_coor == self.GRID_WIDTH or next_coor < 0:
@@ -126,7 +117,25 @@ class Block:
             self.shape[i][1] += direction
 
     def drop_block(self, grid):
-        pass
+        """Drops the block the lowest point possible on the grid"""
 
-    def speed_up(self):
-        pass
+        # keep dropping the block by one until it either hits the bottom or another block
+        while self._check_free_space(grid):
+            for i in range(len(self.shape)):
+                self.shape[i][0] += 1
+
+    def _check_free_space(self, grid) -> bool:
+        """Checks whether it is possible to move the block down by one increment"""
+        for i in range(len(self.shape)):
+            # column and row to be checked
+            col_check = self.shape[i][1]
+            row_check = self.shape[i][0] + 1
+
+            # check bottom
+            if row_check == self.GRID_HEIGHT:
+                return False
+            # check collsion
+            if grid[row_check][col_check] != (0, 0, 0):
+                return False
+
+        return True

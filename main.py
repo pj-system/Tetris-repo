@@ -40,7 +40,6 @@ class Tetris:
             self.check_events()
 
             # Game Logic
-
             # tbc
 
             # window background and UI
@@ -74,6 +73,11 @@ class Tetris:
                     self._accelerate_block()
                 if event.key == pygame.K_UP:
                     self.block.rotate()
+                if event.key == pygame.K_SPACE:
+                    self.block.drop_block(self.play_field.grid)
+                    self._add_to_grid()
+                    self.play_field.check_clear()
+                    self.block = Block(self)
             # key release
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_DOWN:
@@ -93,9 +97,11 @@ class Tetris:
             self.play_field.grid[grid_row][grid_col] = self.block.shape_color
 
     def _accelerate_block(self):
+        """increases soft drop rate of the block"""
         pygame.time.set_timer(self.drop_block, self.accelerate_rate)
 
     def _decelerate_block(self):
+        """decreases soft drop rate to baseline"""
         pygame.time.set_timer(self.drop_block, self.drop_rate)
 
 

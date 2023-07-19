@@ -28,7 +28,7 @@ class GameSpace:
 
         self.grid = [[(0, 0, 0) for col in range(self.GRID_WIDTH)]
                      for row in range(self.GRID_HEIGHT)]
-        self.grid_colour = (200, 200, 200)
+        self.grid_colour = (120, 120, 120)
 
     def draw_board(self):
         """Draws the game board (blocks which have been played) to the screen"""
