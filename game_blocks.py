@@ -65,16 +65,46 @@ class Block:
         if self.r_selection == 4:
             return
 
+        # SHAPES dict is constructed so pivot block is always in positin 2
         pivot = self.shape[2]
-        rotation_shape = []
-
-        for coor in self.shape:
-            rotation_shape.append(
-                [pivot[0] - coor[0], pivot[1] - coor[1]])
+        rotation_shape = [0, 0, 0, 0]
 
         for i in range(4):
-            row, col = rotation_shape[i][0], rotation_shape[i][1]
-            self.shape[i] = [col * -1 + pivot[0], row * 1 + pivot[1]]
+            coor = self.shape[i]
+            row, col = pivot[0] - coor[0], pivot[1] - coor[1]
+            rotation_shape[i] = [col * -1 + pivot[0], row * 1 + pivot[1]]
+
+        # maxrow - lowest position of the block, min/max_col - left and right most postion
+        max_row = max((x[0]) for x in rotation_shape)
+        min_col = min((x[1]) for x in rotation_shape)
+        max_col = max((x[1]) for x in rotation_shape)
+
+        # check if post rotation shape dips below the lowest points of the grid, elvate by 1 if so
+        if max_row >= self.GRID_HEIGHT:
+            for coor in rotation_shape:
+                if self.r_selection == 1:
+                    coor[0] -= max_row - self.GRID_HEIGHT + 1
+                else:
+                    coor[0] -= 1
+            self.shape = rotation_shape
+
+        # check if rotated shape exceeds grid limits, if so offset
+        edge_check = False
+        # left side
+        if min_col < 0:
+            offset = 0 - min_col
+            edge_check = True
+        if max_col >= self.GRID_WIDTH:
+            offset = self.GRID_WIDTH - max_col - 1
+            edge_check = True
+        # right side
+        if edge_check:
+            for coor in rotation_shape:
+                print(offset)
+                coor[1] += offset
+            self.shape = rotation_shape
+        else:
+            self.shape = rotation_shape
 
     def draw(self):
         """class responisble for drawing block currently in play onto the screen"""
@@ -96,7 +126,7 @@ class Block:
             self.shape[i][0] += 1
         return True
 
-    def move(self, direction, grid):
+    def move(self, direction: int, grid: list[list]):
         """ moves the block when arrow key is pressed. Needs grid array to check collisions"""
         for i in range(len(self.shape)):
 
@@ -126,7 +156,8 @@ class Block:
 
     def _check_free_space(self, grid) -> bool:
         """Checks whether it is possible to move the block down by one increment"""
-        for i in range(len(self.shape)):
+
+        for i in range(4):
             # column and row to be checked
             col_check = self.shape[i][1]
             row_check = self.shape[i][0] + 1
