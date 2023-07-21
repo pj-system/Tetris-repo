@@ -82,10 +82,7 @@ class Block:
         # check if post rotation shape dips below the lowest points of the grid, elvate by 1 if so
         if max_row >= self.GRID_HEIGHT:
             for coor in rotation_shape:
-                if self.r_selection == 1:
-                    coor[0] -= max_row - self.GRID_HEIGHT + 1
-                else:
-                    coor[0] -= 1
+                coor[0] -= max_row - self.GRID_HEIGHT + 1
             self.shape = rotation_shape
 
         # check if rotated shape exceeds grid limits, if so offset
@@ -94,10 +91,11 @@ class Block:
         if min_col < 0:
             offset = 0 - min_col
             edge_check = True
+        # right side
         if max_col >= self.GRID_WIDTH:
             offset = self.GRID_WIDTH - max_col - 1
             edge_check = True
-        # right side
+
         if edge_check:
             for coor in rotation_shape:
                 print(offset)
