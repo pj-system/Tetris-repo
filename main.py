@@ -72,7 +72,7 @@ class Tetris:
                 if event.key == pygame.K_DOWN:
                     self._accelerate_block()
                 if event.key == pygame.K_UP:
-                    self.block.rotate()
+                    self.block.rotate(self.play_field.grid)
                 # Restart
                 if event.key == pygame.K_r:
                     self.play_field = GameSpace(self)

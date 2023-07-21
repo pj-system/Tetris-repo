@@ -33,8 +33,18 @@ class Block:
             5: (20, 219, 13),
             6: (209, 29, 29),
             7: (133, 12, 199),
-
         }
+
+        self.KICK_OPTIONS = [
+            # left or right
+            [-1, 0], [1, 0],
+            # down or up
+            [0, 1], [0, -1],
+            # down and left or right
+            [1, 1], [1, -1],
+            # up and left or right
+            [-1, 1], [-1, -1]
+        ]
 
         # iniciate settings
         settings = Settings()
@@ -58,7 +68,7 @@ class Block:
         for i in range(len(self.shape)):
             self.shape[i][1] += self.loc_col
 
-    def rotate(self):
+    def rotate(self, grid):
         """Rotates the piece in play"""
 
         # Do nothing if shape is an O
@@ -95,14 +105,24 @@ class Block:
         if max_col >= self.GRID_WIDTH:
             offset = self.GRID_WIDTH - max_col - 1
             edge_check = True
-
+        # if beyond one of the edges -> offset
         if edge_check:
             for coor in rotation_shape:
-                print(offset)
                 coor[1] += offset
-            self.shape = rotation_shape
-        else:
-            self.shape = rotation_shape
+
+        # check colisions with other blocks and attempt to relocate 1 space in any direction
+        if not self._check_placed_collision(rotation_shape, grid):
+            for kick in self.KICK_OPTIONS:
+                test_rotation_shape = list(rotation_shape)
+                for coor in test_rotation_shape:
+                    coor[0] += kick[0]
+                    coor[1] += kick[1]
+                if self._check_placed_collision(test_rotation_shape, grid):
+                    self.shape = test_rotation_shape
+                    return
+
+        self.shape = rotation_shape
+        return
 
     def draw(self):
         """class responisble for drawing block currently in play onto the screen"""
@@ -167,4 +187,17 @@ class Block:
             if grid[row_check][col_check] != (0, 0, 0):
                 return False
 
+        return True
+
+    def _check_placed_collision(self, shape, grid) -> bool:
+        """Checks if shape resulting from rotation is beyond the grid space or sollides with placed blocks
+        Returns True if location is valid"""
+        for coor in shape:
+            row, col = coor[0], coor[1]
+            # Grid check
+            if row >= self.GRID_HEIGHT or col < 0 or col >= self.GRID_WIDTH:
+                return False
+            # block colision check
+            if grid[row][col] != (0, 0, 0):
+                return False
         return True
