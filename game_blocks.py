@@ -53,6 +53,7 @@ class Block:
         self.r_selection = random.randint(1, 7)
         self.shape = self.SHAPES[self.r_selection]
         self.shape_color = tuple(self.SHAPE_COLOURS[self.r_selection])
+        self.ghost_color = (58, 58, 61)
 
         # set render space to the main screen
         self.screen = tet_game.screen
@@ -63,11 +64,13 @@ class Block:
         self.CELL_SIZE = settings.CELL_SIZE
         self.GRID_DRAW_DELTA = settings.GRID_DRAW_DELTA
 
-        self.loc_row = 0
+        # find middle of the grid and initialise shape in the middle
         self.loc_col = int((self.GRID_WIDTH/2)) - 2
 
         for i in range(len(self.shape)):
             self.shape[i][1] += self.loc_col
+
+        self.ghost_shape = [coor.copy() for coor in self.shape]
 
     def rotate(self):
         """Rotates the piece in play"""
@@ -127,17 +130,23 @@ class Block:
 
     def draw(self):
         """class responisble for drawing block currently in play onto the screen"""
-        for coordinate in self.shape:
-            block_section = pygame.Rect(self.GRID_DRAW_DELTA + coordinate[1] * self.CELL_SIZE, coordinate[0] * self.CELL_SIZE,
-                                        self.CELL_SIZE, self.CELL_SIZE)
-            pygame.draw.rect(self.screen, self.shape_color, block_section)
+
+        self._update_ghost()
+
+        for i in range(4):
+            coordinate = self.ghost_shape[i]
+            self._draw_to_screen(coordinate, self.ghost_color)
+
+        for i in range(4):
+            coordinate = self.shape[i]
+            self._draw_to_screen(coordinate, self.shape_color)
 
     def update(self):
         """shift block down by one on the grid
             Returns True if blocked moved"""
 
         # check if block doesn't colide with existing blocks or hit the bottom
-        if not self._check_free_space():
+        if not self._check_free_space(self.shape):
             return None
 
         # if not at the bottom or on top of another block: move each part of the piece down 1 cell
@@ -169,17 +178,17 @@ class Block:
         """Drops the block the lowest point possible on the grid"""
 
         # keep dropping the block by one until it either hits the bottom or another block
-        while self._check_free_space():
+        while self._check_free_space(self.shape):
             for i in range(len(self.shape)):
                 self.shape[i][0] += 1
 
-    def _check_free_space(self) -> bool:
+    def _check_free_space(self, shape) -> bool:
         """Checks whether it is possible to move the block down by one increment"""
 
         for i in range(4):
             # column and row to be checked
-            col_check = self.shape[i][1]
-            row_check = self.shape[i][0] + 1
+            col_check = shape[i][1]
+            row_check = shape[i][0] + 1
 
             # check bottom
             if row_check == self.GRID_HEIGHT:
@@ -203,7 +212,18 @@ class Block:
                 return False
         return True
 
+    def _draw_to_screen(self, coordinate, colour):
+        """Draws game blocks to the game screen
+        coordinate: list with [row][col] on the grid"""
 
-class Ghost_Block(Block):
-    def __init__(self, tet_game) -> None:
-        super().__init__(tet_game)
+        block_section = pygame.Rect(self.GRID_DRAW_DELTA + coordinate[1] * self.CELL_SIZE, coordinate[0] * self.CELL_SIZE,
+                                    self.CELL_SIZE, self.CELL_SIZE)
+        pygame.draw.rect(self.screen, colour, block_section)
+
+    def _update_ghost(self):
+        """Updates the position of the ghost (shadow indicating block position if dropped)"""
+
+        self.ghost_shape = [coor.copy() for coor in self.shape]
+        while self._check_free_space(self.ghost_shape):
+            for i in range(len(self.ghost_shape)):
+                self.ghost_shape[i][0] += 1
