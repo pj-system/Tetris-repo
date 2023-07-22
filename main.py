@@ -80,7 +80,6 @@ class Tetris:
                 if event.key == pygame.K_SPACE:
                     self.block.drop_block()
                     self._add_to_grid()
-                    print(self.play_field.grid[18:20])
                     self.play_field.check_clear()
                     self.block = Block(self)
             # key release
@@ -92,7 +91,6 @@ class Tetris:
             if event.type == self.drop_block:
                 if not self.block.update():
                     self._add_to_grid()
-                    print(self.play_field.grid[18:20])
                     self.play_field.check_clear()
                     self.block = Block(self)
 
