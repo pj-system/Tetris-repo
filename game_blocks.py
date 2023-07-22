@@ -56,6 +56,7 @@ class Block:
 
         # set render space to the main screen
         self.screen = tet_game.screen
+        self.grid = tet_game.play_field.grid
 
         self.GRID_HEIGHT = settings.GRID_HEIGHT
         self.GRID_WIDTH = settings.GRID_WIDTH
@@ -68,7 +69,7 @@ class Block:
         for i in range(len(self.shape)):
             self.shape[i][1] += self.loc_col
 
-    def rotate(self, grid):
+    def rotate(self):
         """Rotates the piece in play"""
 
         # Do nothing if shape is an O
@@ -111,13 +112,13 @@ class Block:
                 coor[1] += offset
 
         # check colisions with other blocks and attempt to relocate 1 space in any direction
-        if not self._check_placed_collision(rotation_shape, grid):
+        if not self._check_placed_collision(rotation_shape):
             for kick in self.KICK_OPTIONS:
                 test_rotation_shape = list(rotation_shape)
                 for coor in test_rotation_shape:
                     coor[0] += kick[0]
                     coor[1] += kick[1]
-                if self._check_placed_collision(test_rotation_shape, grid):
+                if self._check_placed_collision(test_rotation_shape):
                     self.shape = test_rotation_shape
                     return
 
@@ -131,12 +132,12 @@ class Block:
                                         self.CELL_SIZE, self.CELL_SIZE)
             pygame.draw.rect(self.screen, self.shape_color, block_section)
 
-    def update(self, grid):
+    def update(self):
         """shift block down by one on the grid
             Returns True if blocked moved"""
 
         # check if block doesn't colide with existing blocks or hit the bottom
-        if not self._check_free_space(grid):
+        if not self._check_free_space():
             return None
 
         # if not at the bottom or on top of another block: move each part of the piece down 1 cell
@@ -144,7 +145,7 @@ class Block:
             self.shape[i][0] += 1
         return True
 
-    def move(self, direction: int, grid: list[list]):
+    def move(self, direction: int):
         """ moves the block when arrow key is pressed. Needs grid array to check collisions"""
         for i in range(len(self.shape)):
 
@@ -153,26 +154,26 @@ class Block:
             # row coorinate of the block on the grid
             block_coor = self.shape[i]
 
+            # do nothing if move is not allowed
             if next_coor == self.GRID_WIDTH or next_coor < 0:
                 return
 
-            if next_coor < self.GRID_WIDTH - 1:
-                if grid[block_coor[0]][next_coor] != (0, 0, 0):
-                    return
+            if self.grid[block_coor[0]][next_coor] != (0, 0, 0):
+                return
 
         # shift all blocks in the directon of key press
         for i in range(len(self.shape)):
             self.shape[i][1] += direction
 
-    def drop_block(self, grid):
+    def drop_block(self):
         """Drops the block the lowest point possible on the grid"""
 
         # keep dropping the block by one until it either hits the bottom or another block
-        while self._check_free_space(grid):
+        while self._check_free_space():
             for i in range(len(self.shape)):
                 self.shape[i][0] += 1
 
-    def _check_free_space(self, grid) -> bool:
+    def _check_free_space(self) -> bool:
         """Checks whether it is possible to move the block down by one increment"""
 
         for i in range(4):
@@ -184,12 +185,12 @@ class Block:
             if row_check == self.GRID_HEIGHT:
                 return False
             # check collsion
-            if grid[row_check][col_check] != (0, 0, 0):
+            if self.grid[row_check][col_check] != (0, 0, 0):
                 return False
 
         return True
 
-    def _check_placed_collision(self, shape, grid) -> bool:
+    def _check_placed_collision(self, shape) -> bool:
         """Checks if shape resulting from rotation is beyond the grid space or sollides with placed blocks
         Returns True if location is valid"""
         for coor in shape:
@@ -198,6 +199,11 @@ class Block:
             if row >= self.GRID_HEIGHT or col < 0 or col >= self.GRID_WIDTH:
                 return False
             # block colision check
-            if grid[row][col] != (0, 0, 0):
+            if self.grid[row][col] != (0, 0, 0):
                 return False
         return True
+
+
+class Ghost_Block(Block):
+    def __init__(self, tet_game) -> None:
+        super().__init__(tet_game)

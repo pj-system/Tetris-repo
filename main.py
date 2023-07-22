@@ -66,20 +66,21 @@ class Tetris:
                 if event.key == pygame.K_q:
                     sys.exit()
                 if event.key == pygame.K_RIGHT:
-                    self.block.move(1, self.play_field.grid)
+                    self.block.move(1)
                 if event.key == pygame.K_LEFT:
-                    self.block.move(-1, self.play_field.grid)
+                    self.block.move(-1)
                 if event.key == pygame.K_DOWN:
                     self._accelerate_block()
                 if event.key == pygame.K_UP:
-                    self.block.rotate(self.play_field.grid)
+                    self.block.rotate()
                 # Restart
                 if event.key == pygame.K_r:
                     self.play_field = GameSpace(self)
                     self.block = Block(self)
                 if event.key == pygame.K_SPACE:
-                    self.block.drop_block(self.play_field.grid)
+                    self.block.drop_block()
                     self._add_to_grid()
+                    print(self.play_field.grid[18:20])
                     self.play_field.check_clear()
                     self.block = Block(self)
             # key release
@@ -89,8 +90,9 @@ class Tetris:
 
             # block drop on timer
             if event.type == self.drop_block:
-                if not self.block.update(self.play_field.grid):
+                if not self.block.update():
                     self._add_to_grid()
+                    print(self.play_field.grid[18:20])
                     self.play_field.check_clear()
                     self.block = Block(self)
 
