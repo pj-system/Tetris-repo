@@ -109,6 +109,7 @@ class Tetris:
     def reset(self):
         self.play_field = GameSpace(self)
         self.block = Block(self)
+        self.next_block = Block(self)
         self.score = 0
 
     def _add_to_grid(self):
