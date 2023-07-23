@@ -7,6 +7,18 @@ class GameSpace:
 
     def __init__(self, tet_game) -> None:
 
+        self.scoring = {
+            0: 0,
+            # single
+            1: 40,
+            # double
+            2: 100,
+            # tripple
+            3: 300,
+            # tetris
+            4: 1200
+        }
+
         settings = Settings()
         # grid layout
         self.GRID_HEIGHT = settings.GRID_HEIGHT
@@ -52,17 +64,28 @@ class GameSpace:
             pygame.draw.line(self.screen, self.grid_colour,
                              (col, 0), (col, self.WINDOW_HEIGHT), 3)
 
-    def check_clear(self):
-        """Checks if Row has been filled up and clears the row"""
+    def check_clear(self) -> int:
+        """Checks if Row has been filled up and clears the row.
+        Returns points gained from clearing"""
 
         # check each row of the grid and if full clear it
+
+        lines_cleared = 0
+        points = 0
+
         for row in range(self.GRID_HEIGHT):
             full = True
+            # if any column is empty then no clear
             for col in range(self.GRID_WIDTH):
                 if self.grid[row][col] == (0, 0, 0):
                     full = False
                     break
+            # if all columns filled - line cleared
             if full == True:
                 self.grid.pop(row)
                 self.grid.insert(0, [(0, 0, 0)
                                  for col in range(self.GRID_WIDTH)])
+                lines_cleared += 1
+
+        points = self.scoring[lines_cleared]
+        return points

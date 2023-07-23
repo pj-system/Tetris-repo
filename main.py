@@ -11,7 +11,7 @@ class Tetris:
 
     def __init__(self) -> None:
 
-        pygame.init
+        pygame.init()
         settings = Settings()
         # Game window size
         self.WINDOW_HEIGHT = settings.WINDOW_HEIGHT
@@ -32,6 +32,9 @@ class Tetris:
         pygame.time.set_timer(self.drop_block, self.drop_rate)
 
         self.clock = pygame.time.Clock()
+        self.text_font = pygame.font.SysFont("arial", 25, True)
+
+        self.score = 0
 
     def run_game(self):
         """Main loop of the game"""
@@ -49,6 +52,7 @@ class Tetris:
             self.play_field.draw_board()
             self.block.draw()
             self.play_field.draw_grid()
+            self.draw_score()
 
             # Refresh display at 60fps
             pygame.display.flip()
@@ -75,12 +79,9 @@ class Tetris:
                     self.block.rotate()
                 # Restart
                 if event.key == pygame.K_r:
-                    self.play_field = GameSpace(self)
-                    self.block = Block(self)
+                    self.reset()
                 if event.key == pygame.K_SPACE:
-                    self.block.drop_block()
-                    self._add_to_grid()
-                    self.play_field.check_clear()
+                    self._drop_and_add_score()
                     self.block = Block(self)
             # key release
             if event.type == pygame.KEYUP:
@@ -91,8 +92,21 @@ class Tetris:
             if event.type == self.drop_block:
                 if not self.block.update():
                     self._add_to_grid()
-                    self.play_field.check_clear()
+                    self.score += self.play_field.check_clear()
                     self.block = Block(self)
+
+    def draw_score(self):
+        heading = self.text_font.render("SCORE:", True, (255, 255, 255))
+        self.screen.blit(heading, (25, 25))
+
+        score_text = self.text_font.render(
+            f'{self.score}', True, (255, 255, 255))
+        self.screen.blit(score_text, (25, 60))
+
+    def reset(self):
+        self.play_field = GameSpace(self)
+        self.block = Block(self)
+        self.score = 0
 
     def _add_to_grid(self):
         """Helper method updating the grid once the block lands"""
@@ -107,6 +121,13 @@ class Tetris:
     def _decelerate_block(self):
         """decreases soft drop rate to baseline"""
         pygame.time.set_timer(self.drop_block, self.drop_rate)
+
+    def _drop_and_add_score(self):
+        lines_dropped = self.block.drop_block()
+        self._add_to_grid()
+        clear_score = self.play_field.check_clear()
+        if clear_score > 0:
+            self.score += clear_score + lines_dropped + 1
 
 
 game = Tetris()

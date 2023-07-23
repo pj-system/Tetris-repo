@@ -174,13 +174,19 @@ class Block:
         for i in range(len(self.shape)):
             self.shape[i][1] += direction
 
-    def drop_block(self):
-        """Drops the block the lowest point possible on the grid"""
+    def drop_block(self) -> int:
+        """Drops the block the lowest point possible on the grid.
+        Returns no. of lines dropped for scoring"""
+
+        lines_dropped = 0
 
         # keep dropping the block by one until it either hits the bottom or another block
         while self._check_free_space(self.shape):
             for i in range(len(self.shape)):
                 self.shape[i][0] += 1
+            lines_dropped += 1
+
+        return lines_dropped
 
     def _check_free_space(self, shape) -> bool:
         """Checks whether it is possible to move the block down by one increment"""
