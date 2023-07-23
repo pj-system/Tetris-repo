@@ -48,29 +48,30 @@ class Block:
 
         # iniciate settings
         settings = Settings()
+        # variables from settings:
+        self.GRID_HEIGHT = settings.GRID_HEIGHT
+        self.GRID_WIDTH = settings.GRID_WIDTH
+        self.CELL_SIZE = settings.CELL_SIZE
+        self.GRID_DRAW_DELTA = [0, settings.GRID_DRAW_DELTA]
 
         # pick a random shape and iniciate corresponding colour
         self.r_selection = random.randint(1, 7)
         self.shape = self.SHAPES[self.r_selection]
+        # shape without offset to the middle of the grid:
+        self.shape_origin = [coor.copy() for coor in self.shape]
+        # find middle of the grid and initialise shape in the middle
+        for i in range(len(self.shape)):
+            self.shape[i][1] += int((self.GRID_WIDTH/2)) - 2
+        # inicialise ghost shape (block shadow) to be in line with the block
+        self.ghost_shape = [coor.copy() for coor in self.shape]
+
+        # set colours for block and block shadow:
         self.shape_color = tuple(self.SHAPE_COLOURS[self.r_selection])
         self.ghost_color = (58, 58, 61)
 
         # set render space to the main screen
         self.screen = tet_game.screen
         self.grid = tet_game.play_field.grid
-
-        self.GRID_HEIGHT = settings.GRID_HEIGHT
-        self.GRID_WIDTH = settings.GRID_WIDTH
-        self.CELL_SIZE = settings.CELL_SIZE
-        self.GRID_DRAW_DELTA = settings.GRID_DRAW_DELTA
-
-        # find middle of the grid and initialise shape in the middle
-        self.loc_col = int((self.GRID_WIDTH/2)) - 2
-
-        for i in range(len(self.shape)):
-            self.shape[i][1] += self.loc_col
-
-        self.ghost_shape = [coor.copy() for coor in self.shape]
 
     def rotate(self):
         """Rotates the piece in play"""
@@ -135,11 +136,19 @@ class Block:
 
         for i in range(4):
             coordinate = self.ghost_shape[i]
-            self._draw_to_screen(coordinate, self.ghost_color)
+            self._draw_shape(
+                coordinate, self.GRID_DRAW_DELTA, self.ghost_color)
 
         for i in range(4):
             coordinate = self.shape[i]
-            self._draw_to_screen(coordinate, self.shape_color)
+            self._draw_shape(coordinate, self.GRID_DRAW_DELTA,
+                             self.shape_color)
+
+    def draw_tetromino(self, origin):
+        for i in range(4):
+            coordinate = self.shape_origin[i]
+            self._draw_shape(coordinate, origin,
+                             self.shape_color)
 
     def update(self):
         """shift block down by one on the grid
@@ -174,8 +183,8 @@ class Block:
         for i in range(len(self.shape)):
             self.shape[i][1] += direction
 
-    def drop_block(self) -> int:
-        """Drops the block the lowest point possible on the grid.
+    def hard_drop_block(self) -> int:
+        """Drops the block to the lowest point possible on the grid.
         Returns no. of lines dropped for scoring"""
 
         lines_dropped = 0
@@ -218,11 +227,12 @@ class Block:
                 return False
         return True
 
-    def _draw_to_screen(self, coordinate, colour):
+    def _draw_shape(self, coordinate, delta, colour):
         """Draws game blocks to the game screen
-        coordinate: list with [row][col] on the grid"""
+        coordinate: list with [row][col] on the grid
+        delta: offset relative to the screen size"""
 
-        block_section = pygame.Rect(self.GRID_DRAW_DELTA + coordinate[1] * self.CELL_SIZE, coordinate[0] * self.CELL_SIZE,
+        block_section = pygame.Rect(delta[1] + coordinate[1] * self.CELL_SIZE, delta[0] + coordinate[0] * self.CELL_SIZE,
                                     self.CELL_SIZE, self.CELL_SIZE)
         pygame.draw.rect(self.screen, colour, block_section)
 

@@ -20,7 +20,7 @@ class GameSpace:
         }
 
         settings = Settings()
-        # grid layout
+        # grid layout, variables from settings.py
         self.GRID_HEIGHT = settings.GRID_HEIGHT
         self.GRID_WIDTH = settings.GRID_WIDTH
         self.CELL_SIZE = settings.CELL_SIZE
@@ -63,6 +63,9 @@ class GameSpace:
         for col in range(self.col_draw_range_l, self.col_draw_range_r + self.CELL_SIZE, self.CELL_SIZE):
             pygame.draw.line(self.screen, self.grid_colour,
                              (col, 0), (col, self.WINDOW_HEIGHT), 3)
+
+    def next_and_saved_grid(self):
+        pass
 
     def check_clear(self) -> int:
         """Checks if Row has been filled up and clears the row.

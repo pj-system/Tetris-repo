@@ -10,7 +10,7 @@ class Settings():
 
         # window dimentions and attributes
         self.WINDOW_HEIGHT = 880
-        self.WINDOW_WIDTH = 800
+        self.WINDOW_WIDTH = 880
 
         self.WINDOW_CENTER = int(self.WINDOW_WIDTH/2)
 
