@@ -53,8 +53,9 @@ class Tetris:
             self.play_field.draw_board()
             self.block.draw()
             # COME BACK TO THIS!!!!
-            self.next_block.draw_tetromino([80, 700])
+            self.next_block.draw_tetromino([120, 700])
             self.play_field.draw_grid()
+            self.play_field.draw_next_and_saved_grid()
             self.draw_score()
 
             # Refresh display at 60fps

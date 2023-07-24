@@ -26,6 +26,10 @@ class GameSpace:
         self.CELL_SIZE = settings.CELL_SIZE
         self.GRID_DRAW_DELTA = settings.GRID_DRAW_DELTA
 
+        self.SIDE_GRID_HIGHT = settings.SIDE_GRID_HIGHT
+        self.SIDE_GRID_WIDTH = settings.SIDE_GRID_WIDTH
+        self.SIDE_GRID_COL_ORIGIN = settings.SIDE_GRID_COL_ORIGIN
+
         # determining draw range for columns; grid to be placed in the centre of the screen
         # left (start):
         self.col_draw_range_l = self.GRID_DRAW_DELTA
@@ -64,8 +68,17 @@ class GameSpace:
             pygame.draw.line(self.screen, self.grid_colour,
                              (col, 0), (col, self.WINDOW_HEIGHT), 3)
 
-    def next_and_saved_grid(self):
-        pass
+    def draw_next_and_saved_grid(self):
+
+        col_draw_range_l = self.SIDE_GRID_COL_ORIGIN
+        col_draw_range_r = self.SIDE_GRID_COL_ORIGIN + \
+            self.SIDE_GRID_WIDTH * self.CELL_SIZE
+        row_draw_range_top = 80
+        row_draw_range_bot = row_draw_range_top + \
+            (self.SIDE_GRID_HIGHT) * self.CELL_SIZE
+
+        self._draw_grid_lines(row_draw_range_top, row_draw_range_bot,
+                              col_draw_range_l,  col_draw_range_r)
 
     def check_clear(self) -> int:
         """Checks if Row has been filled up and clears the row.
@@ -92,3 +105,11 @@ class GameSpace:
 
         points = self.scoring[lines_cleared]
         return points
+
+    def _draw_grid_lines(self, row_draw_range_top, row_draw_range_bot, col_draw_range_l, col_draw_range_r):
+        for row in range(row_draw_range_top, row_draw_range_bot + self.CELL_SIZE, self.CELL_SIZE):
+            pygame.draw.line(self.screen, self.grid_colour,
+                             (col_draw_range_l, row), (col_draw_range_r, row), 3)
+        for col in range(col_draw_range_l, col_draw_range_r + self.CELL_SIZE, self.CELL_SIZE):
+            pygame.draw.line(self.screen, self.grid_colour,
+                             (col, row_draw_range_top), (col, row_draw_range_bot), 3)
