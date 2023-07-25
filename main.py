@@ -43,9 +43,6 @@ class Tetris:
             # Event Check
             self.check_events()
 
-            # Game Logic
-            # tbc
-
             # window background and UI
             self.screen.fill((0, 0, 0))
 
