@@ -30,20 +30,35 @@ class GameSpace:
         self.SIDE_GRID_WIDTH = settings.SIDE_GRID_WIDTH
         self.SIDE_GRID_COL_ORIGIN = settings.SIDE_GRID_COL_ORIGIN
 
-        # determining draw range for columns; grid to be placed in the centre of the screen
-        # left (start):
-        self.col_range_l = self.GRID_DRAW_DELTA
-        # right (limit)
-        self.col_range_r = self.GRID_DRAW_DELTA + self.CELL_SIZE * self.GRID_WIDTH
-
         # screen vairables from main
         self.screen = tet_game.screen
         self.screen_rect = tet_game.screen.get_rect()
         self.WINDOW_HEIGHT = settings.WINDOW_HEIGHT
         self.WINDOW_WIDTH = settings.WINDOW_WIDTH
 
+        # determining draw ranges for main grid (lines); grid to be placed in the centre of the screen
+        # column left (start):
+        self.col_range_l_main = self.GRID_DRAW_DELTA
+        # column right (limit)
+        self.col_range_r_main = self.GRID_DRAW_DELTA + self.CELL_SIZE * self.GRID_WIDTH
+        # Rop row (top of the screen)
+        self.row_range_top_main = 0
+        # bottom row (bottom of the screen) **(+ cell size to include bottom line in for loop)
+        self.row_range_bot_main = self.WINDOW_HEIGHT + self.CELL_SIZE
+        # determining draw range for side gird; grid to be placed in the centre of the screen
+        # column left (start):
+        self.col_range_l_side = self.SIDE_GRID_COL_ORIGIN
+        # column right (limit)
+        self.col_range_r_side = self.SIDE_GRID_COL_ORIGIN + \
+            self.SIDE_GRID_WIDTH * self.CELL_SIZE
+        self.row_range_top_side = [80, 320]
+        self.row_range_bot_side = [
+            self.SIDE_GRID_HIGHT * self.CELL_SIZE + top for top in self.row_range_top_side]
+
+        # incialise gird storing colours of placed blocks
         self.grid = [[(0, 0, 0) for col in range(self.GRID_WIDTH)]
                      for row in range(self.GRID_HEIGHT)]
+        # set grid colour
         self.grid_colour = (120, 120, 120)
 
     def draw_board(self):
@@ -53,7 +68,7 @@ class GameSpace:
         for row in range(0, self.GRID_HEIGHT):
 
             for col in range(0, self.GRID_WIDTH):
-                cell = pygame.Rect(self.col_range_l + col * self.CELL_SIZE, row *
+                cell = pygame.Rect(self.col_range_l_main + col * self.CELL_SIZE, row *
                                    self.CELL_SIZE, self.CELL_SIZE, self.CELL_SIZE)
                 pygame.draw.rect(
                     self.screen, self.grid[row][col], cell)
@@ -61,24 +76,12 @@ class GameSpace:
     def draw_grid(self):
         """Draws the grid - lines separating the blocks on screen"""
 
-        for row in range(0, self.WINDOW_HEIGHT + self.CELL_SIZE, self.CELL_SIZE):
-            pygame.draw.line(self.screen, self.grid_colour,
-                             (self.col_range_l, row), (self.col_range_r, row), 3)
-        for col in range(self.col_range_l, self.col_range_r + self.CELL_SIZE, self.CELL_SIZE):
-            pygame.draw.line(self.screen, self.grid_colour,
-                             (col, 0), (col, self.WINDOW_HEIGHT), 3)
+        self._draw_grid_lines(self.row_range_top_main, self.row_range_bot_main,
+                              self.col_range_l_main, self.col_range_r_main)
 
-    def draw_next_and_saved_grid(self):
-
-        col_range_l = self.SIDE_GRID_COL_ORIGIN
-        col_range_r = self.SIDE_GRID_COL_ORIGIN + \
-            self.SIDE_GRID_WIDTH * self.CELL_SIZE
-        row_range_top = 80
-        row_range_bot = row_range_top + \
-            (self.SIDE_GRID_HIGHT) * self.CELL_SIZE
-
-        self._draw_grid_lines(row_range_top, row_range_bot,
-                              col_range_l,  col_range_r)
+        for grid in range(2):
+            self._draw_grid_lines(self.row_range_top_side[grid], self.row_range_bot_side[grid],
+                                  self.col_range_l_side, self.col_range_r_side)
 
     def check_clear(self) -> int:
         """Checks if Row has been filled up and clears the row.
@@ -107,6 +110,7 @@ class GameSpace:
         return points
 
     def _draw_grid_lines(self, row_range_top, row_range_bot, col_range_l, col_range_r):
+        """draws lines of any tetris grid given coordinates of top, bottom, left and right most lines"""
         for row in range(row_range_top, row_range_bot + self.CELL_SIZE, self.CELL_SIZE):
             pygame.draw.line(self.screen, self.grid_colour,
                              (col_range_l, row), (col_range_r, row), 3)

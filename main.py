@@ -25,6 +25,7 @@ class Tetris:
         self.play_field = GameSpace(self)
         self.block = Block(self)
         self.next_block = Block(self)
+        self.saved_block = None
 
         # set user event to periodically lower the block and timer for block drop event
         self.drop_rate = settings.drop_rate
@@ -52,7 +53,6 @@ class Tetris:
             # COME BACK TO THIS!!!!
             self.next_block.draw_tetromino([120, 700])
             self.play_field.draw_grid()
-            self.play_field.draw_next_and_saved_grid()
             self.draw_score()
 
             # Refresh display at 60fps
@@ -134,6 +134,12 @@ class Tetris:
     def _new_block(self):
         self.block = self.next_block
         self.next_block = Block(self)
+
+    def save_shape(self):
+        pass
+
+    def use_saved_shape(self):
+        pass
 
 
 game = Tetris()
