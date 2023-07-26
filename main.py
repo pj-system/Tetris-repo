@@ -50,8 +50,10 @@ class Tetris:
             # Graphics render
             self.play_field.draw_board()
             self.block.draw()
-            # COME BACK TO THIS!!!!
+            # COME BACK TO THIS, coordinate needs to be calculated not stated!
             self.next_block.draw_tetromino([120, 700])
+            if self.saved_block:
+                self.saved_block.draw_tetromino([360, 700])
             self.play_field.draw_grid()
             self.draw_score()
 
@@ -84,6 +86,10 @@ class Tetris:
                 if event.key == pygame.K_SPACE:
                     self._drop_and_add_score()
                     self._new_block()
+                if event.key == pygame.K_v:
+                    self.save_shape()
+                if event.key == pygame.K_b:
+                    self.use_saved_shape()
             # key release
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_DOWN:
@@ -110,6 +116,17 @@ class Tetris:
         self.next_block = Block(self)
         self.score = 0
 
+    def save_shape(self):
+        if not self.saved_block:
+            self.saved_block = self.block
+            self._new_block()
+
+    def use_saved_shape(self):
+        if self.saved_block:
+            self.block = self.saved_block
+            self.saved_block = None
+            self.block.set_start()
+
     def _add_to_grid(self):
         """Helper method updating the grid once the block lands"""
         for coor in self.block.shape:
@@ -134,12 +151,6 @@ class Tetris:
     def _new_block(self):
         self.block = self.next_block
         self.next_block = Block(self)
-
-    def save_shape(self):
-        pass
-
-    def use_saved_shape(self):
-        pass
 
 
 game = Tetris()

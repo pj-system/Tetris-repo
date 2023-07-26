@@ -60,8 +60,7 @@ class Block:
         # shape without offset to the middle of the grid:
         self.shape_origin = [coor.copy() for coor in self.shape]
         # find middle of the grid and initialise shape in the middle
-        for i in range(len(self.shape)):
-            self.shape[i][1] += int((self.GRID_WIDTH/2)) - 2
+        self.set_start()
         # inicialise ghost shape (block shadow) to be in line with the block
         self.ghost_shape = [coor.copy() for coor in self.shape]
 
@@ -196,6 +195,12 @@ class Block:
             lines_dropped += 1
 
         return lines_dropped
+
+    def set_start(self):
+
+        self.shape = [coor.copy() for coor in self.shape_origin]
+        for i in range(4):
+            self.shape[i][1] += int((self.GRID_WIDTH/2)) - 2
 
     def _check_free_space(self, shape) -> bool:
         """Checks whether it is possible to move the block down by one increment"""
