@@ -84,7 +84,7 @@ class GameSpace:
                                   self.col_range_l_side, self.col_range_r_side)
 
     def check_clear(self) -> int:
-        """Checks if Row has been filled up and clears the row.
+        """Checks if Row has been filled up and clears the row.\n
         Returns points gained from clearing"""
 
         # check each row of the grid and if full clear it
@@ -109,8 +109,8 @@ class GameSpace:
         points = self.scoring[lines_cleared]
         return points
 
-    def _draw_grid_lines(self, row_range_top, row_range_bot, col_range_l, col_range_r):
-        """draws lines of any tetris grid given coordinates of top, bottom, left and right most lines"""
+    def _draw_grid_lines(self, row_range_top: int, row_range_bot: int, col_range_l: int, col_range_r: int):
+        """Draws lines of any tetris grid given coordinates of top, bottom, left and right most lines"""
         for row in range(row_range_top, row_range_bot + self.CELL_SIZE, self.CELL_SIZE):
             pygame.draw.line(self.screen, self.grid_colour,
                              (col_range_l, row), (col_range_r, row), 3)

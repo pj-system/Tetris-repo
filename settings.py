@@ -1,5 +1,5 @@
 class Settings():
-    """class holding game settings"""
+    """class holding game settings and global variables"""
 
     def __init__(self) -> None:
 

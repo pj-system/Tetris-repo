@@ -34,7 +34,10 @@ class Tetris:
         pygame.time.set_timer(self.soft_drop_block, self.drop_rate)
 
         self.clock = pygame.time.Clock()
-        self.text_font = pygame.font.SysFont("arial", 25, True)
+        self.text_font = pygame.font.SysFont("arial", 30, True)
+
+        self.can_save = True
+        self.can_use_saved = True
 
         self.score = 0
 
@@ -55,7 +58,7 @@ class Tetris:
             if self.saved_block:
                 self.saved_block.draw_tetromino([360, 700])
             self.play_field.draw_grid()
-            self.draw_score()
+            self.draw_text()
 
             # Refresh display at 60fps
             pygame.display.flip()
@@ -84,7 +87,7 @@ class Tetris:
                 if event.key == pygame.K_r:
                     self.reset()
                 if event.key == pygame.K_SPACE:
-                    self._drop_and_add_score()
+                    self.drop_and_add_score()
                     self._new_block()
                 if event.key == pygame.K_v:
                     self.save_shape()
@@ -101,31 +104,49 @@ class Tetris:
                     self._add_to_grid()
                     self.score += self.play_field.check_clear()
                     self._new_block()
+                    self.can_save = True
+                    self.can_use_saved = True
+                    print(self.can_save)
 
-    def draw_score(self):
-        heading = self.text_font.render("SCORE:", True, (255, 255, 255))
-        self.screen.blit(heading, (25, 25))
+    def reset(self):
+        """Resets the game state to start start state (Restart)"""
+        self.play_field = GameSpace(self)
+        self.block = Block(self)
+        self.next_block = Block(self)
+        self.score = 0
+        self.can_save = True
+
+    def save_shape(self):
+        """Saves the current block to be swapped in later"""
+        if not self.saved_block and self.can_save == True:
+            self.saved_block = self.block
+            self._new_block()
+            self.can_use_saved = False
+
+    def use_saved_shape(self):
+        """Takes the saved shape and puts it in play"""
+        if self.saved_block and self.can_use_saved == True:
+            self.block = self.saved_block
+            self.saved_block = None
+            self.block.set_start()
+            self.can_save = False
+
+    def draw_text(self):
+        """ Draws all text based game elements"""
+        # This needs work - WIP
+        score_heading = self.text_font.render("SCORE:", True, (255, 255, 255))
+        self.screen.blit(score_heading, (25, 25))
 
         score_text = self.text_font.render(
             f'{self.score}', True, (255, 255, 255))
         self.screen.blit(score_text, (25, 60))
 
-    def reset(self):
-        self.play_field = GameSpace(self)
-        self.block = Block(self)
-        self.next_block = Block(self)
-        self.score = 0
-
-    def save_shape(self):
-        if not self.saved_block:
-            self.saved_block = self.block
-            self._new_block()
-
-    def use_saved_shape(self):
-        if self.saved_block:
-            self.block = self.saved_block
-            self.saved_block = None
-            self.block.set_start()
+        next_shape_heading = self.text_font.render(
+            "Next Shape:", True, (255, 255, 255))
+        self.screen.blit(next_shape_heading, (660, 30))
+        saved_shape_heading = self.text_font.render(
+            "Saved Shape:", True, (255, 255, 255))
+        self.screen.blit(saved_shape_heading, (660, 270))
 
     def _add_to_grid(self):
         """Helper method updating the grid once the block lands"""
@@ -141,14 +162,18 @@ class Tetris:
         """decreases soft drop rate to baseline"""
         pygame.time.set_timer(self.soft_drop_block, self.drop_rate)
 
-    def _drop_and_add_score(self):
+    def drop_and_add_score(self):
+        """Drops the block to the lowest possible position and tallies up the score if clear(s) achieved"""
         lines_dropped = self.block.hard_drop_block()
         self._add_to_grid()
         clear_score = self.play_field.check_clear()
         if clear_score > 0:
             self.score += clear_score + lines_dropped + 1
+        self.can_save = True
+        self.can_use_saved = True
 
     def _new_block(self):
+        """Next_block goes into play and new next block is iniciated"""
         self.block = self.next_block
         self.next_block = Block(self)
 

@@ -143,15 +143,17 @@ class Block:
             self._draw_shape(coordinate, self.GRID_DRAW_DELTA,
                              self.shape_color)
 
-    def draw_tetromino(self, origin):
+    def draw_tetromino(self, origin: list):
+        """Draws the block shape in any postion relative to the origin.\n
+        Origin takers Row then column (Y -> X)"""
         for i in range(4):
             coordinate = self.shape_origin[i]
             self._draw_shape(coordinate, origin,
                              self.shape_color)
 
-    def update(self):
-        """shift block down by one on the grid
-            Returns True if blocked moved"""
+    def update(self) -> bool:
+        """If possible, shifts block down by one on the grid.\n
+            Returns True if block moved"""
 
         # check if block doesn't colide with existing blocks or hit the bottom
         if not self._check_free_space(self.shape):
@@ -163,7 +165,7 @@ class Block:
         return True
 
     def move(self, direction: int):
-        """ moves the block when arrow key is pressed. Needs grid array to check collisions"""
+        """Moves the block when arrow key is pressed. Needs grid array to check collisions"""
         for i in range(len(self.shape)):
 
             # row coorindate to check
@@ -183,7 +185,7 @@ class Block:
             self.shape[i][1] += direction
 
     def hard_drop_block(self) -> int:
-        """Drops the block to the lowest point possible on the grid.
+        """Drops the block to the lowest point possible on the grid.\n
         Returns no. of lines dropped for scoring"""
 
         lines_dropped = 0
@@ -202,7 +204,7 @@ class Block:
         for i in range(4):
             self.shape[i][1] += int((self.GRID_WIDTH/2)) - 2
 
-    def _check_free_space(self, shape) -> bool:
+    def _check_free_space(self, shape: list) -> bool:
         """Checks whether it is possible to move the block down by one increment"""
 
         for i in range(4):
@@ -219,8 +221,8 @@ class Block:
 
         return True
 
-    def _check_placed_collision(self, shape) -> bool:
-        """Checks if shape resulting from rotation is beyond the grid space or sollides with placed blocks
+    def _check_placed_collision(self, shape: list) -> bool:
+        """Checks if shape resulting from rotation is beyond the grid space or collides with placed blocks.\n
         Returns True if location is valid"""
         for coor in shape:
             row, col = coor[0], coor[1]
@@ -232,9 +234,9 @@ class Block:
                 return False
         return True
 
-    def _draw_shape(self, coordinate, delta, colour):
-        """Draws game blocks to the game screen
-        coordinate: list with [row][col] on the grid
+    def _draw_shape(self, coordinate: list, delta: list, colour: tuple):
+        """Draws game blocks to the game screen.\n
+        coordinate: list in form: [row][col].\n
         delta: offset relative to the screen size"""
 
         block_section = pygame.Rect(delta[1] + coordinate[1] * self.CELL_SIZE, delta[0] + coordinate[0] * self.CELL_SIZE,
