@@ -113,6 +113,7 @@ class Tetris:
         self.play_field = GameSpace(self)
         self.block = Block(self)
         self.next_block = Block(self)
+        self.saved_block = None
         self.score = 0
         self.can_save = True
 
