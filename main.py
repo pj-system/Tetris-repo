@@ -41,6 +41,8 @@ class Tetris:
 
         self.score = 0
 
+        self.game_active = True
+
     def run_game(self):
         """Main loop of the game"""
         while True:
@@ -50,19 +52,19 @@ class Tetris:
             # window background and UI
             self.screen.fill((0, 0, 0))
 
-            # Graphics render
-            self.play_field.draw_board()
-            self.block.draw()
-            # COME BACK TO THIS, coordinate needs to be calculated not stated!
-            self.next_block.draw_tetromino([120, 700])
-            if self.saved_block:
-                self.saved_block.draw_tetromino([360, 700])
-            self.play_field.draw_grid()
-            self.draw_text()
+            if self.game_active == True:
+                # Graphics render
+                self.play_field.draw_board()
+                self.block.draw()
+                # COME BACK TO THIS, coordinate needs to be calculated not stated!
+                self.next_block.draw_tetromino([120, 700])
+                if self.saved_block:
+                    self.saved_block.draw_tetromino([360, 700])
+                self.play_field.draw_grid()
+                self.draw_text()
 
             # Refresh display at 60fps
             pygame.display.flip()
-
             self.clock.tick(60)
 
     def check_events(self):
@@ -116,6 +118,7 @@ class Tetris:
         self.saved_block = None
         self.score = 0
         self.can_save = True
+        self.game_active = True
 
     def save_shape(self):
         """Saves the current block to be swapped in later"""
@@ -176,6 +179,8 @@ class Tetris:
     def _new_block(self):
         """Next_block goes into play and new next block is iniciated"""
         self.block = self.next_block
+        if not self.block._check_placed_collision(self.block.shape):
+            self.game_active = False
         self.next_block = Block(self)
 
 
