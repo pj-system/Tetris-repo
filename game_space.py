@@ -45,13 +45,15 @@ class GameSpace:
         self.row_range_top_main = 0
         # bottom row (bottom of the screen) **(+ cell size to include bottom line in for loop)
         self.row_range_bot_main = self.WINDOW_HEIGHT + self.CELL_SIZE
-        # determining draw range for side gird; grid to be placed in the centre of the screen
+        # determining draw range for side gird; grid to be placed in the centre of the screen:
         # column left (start):
         self.col_range_l_side = self.SIDE_GRID_COL_ORIGIN
         # column right (limit)
         self.col_range_r_side = self.SIDE_GRID_COL_ORIGIN + \
             self.SIDE_GRID_WIDTH * self.CELL_SIZE
+        # top row of the side grids
         self.row_range_top_side = [80, 320]
+        # bottom row of the side grids
         self.row_range_bot_side = [
             self.SIDE_GRID_HIGHT * self.CELL_SIZE + top for top in self.row_range_top_side]
 
