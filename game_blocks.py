@@ -124,7 +124,7 @@ class Block:
                 if self._check_placed_collision(test_rotation_shape):
                     self.shape = test_rotation_shape
                     return
-
+            return
         self.shape = rotation_shape
         return
 
