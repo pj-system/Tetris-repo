@@ -4,6 +4,7 @@ import pygame
 from game_blocks import Block
 from game_space import GameSpace
 from settings import Settings
+from button import Button
 
 
 class Tetris:
@@ -26,6 +27,7 @@ class Tetris:
         self.block = Block(self)
         self.next_block = Block(self)
         self.saved_block = None
+        self.play_button = Button(self, "PLAY")
 
         # set user event to periodically lower the block and timer for block drop event
         self.drop_rate = settings.drop_rate
@@ -60,8 +62,11 @@ class Tetris:
                 self.next_block.draw_tetromino([120, 700])
                 if self.saved_block:
                     self.saved_block.draw_tetromino([360, 700])
-                self.play_field.draw_grid()
-                self.draw_text()
+            else:
+                self.play_button.draw([660, 520], False)
+
+            self.draw_text()
+            self.play_field.draw_grid()
 
             # Refresh display at 60fps
             pygame.display.flip()
@@ -99,6 +104,16 @@ class Tetris:
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_DOWN:
                     self._decelerate_block()
+
+            if event.type == pygame.MOUSEMOTION:
+                if self.play_button.button.collidepoint(pygame.mouse.get_pos()):
+                    self.play_button.button_border = 0
+                else:
+                    self.play_button.button_border = 10
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if self.play_button.button.collidepoint(event.pos):
+                    sys.exit()
 
             # block drop on timer
             if event.type == self.soft_drop_block:
