@@ -30,7 +30,6 @@ class Settings():
         self.drop_rate = 800
         self.accelerate = 50
 
-
-# x = Settings()
-# print(x.WINDOW_CENTER)
-# print(x.GRID_DRAW_IND)
+        # button dimentions:
+        self.BUTTON_WIDTH = self.SIDE_GRID_WIDTH * self.CELL_SIZE
+        self.BUTTON_HEIGHT = 80
