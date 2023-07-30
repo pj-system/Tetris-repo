@@ -6,7 +6,7 @@ import pygame
 class Block:
     """Class managing the game shapes (blocks)"""
 
-    def __init__(self, tet_game) -> None:
+    def __init__(self, tet_game: object) -> None:
         # dict of shapes (top left corner idicated / grid location)
         self.SHAPES = {
             # I

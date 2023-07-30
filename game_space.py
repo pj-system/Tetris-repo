@@ -3,9 +3,9 @@ from settings import Settings
 
 
 class GameSpace:
-    """Class managing he game grid on which blocks land"""
+    """Class managing the game grid on which blocks land"""
 
-    def __init__(self, tet_game) -> None:
+    def __init__(self, tet_game: object) -> None:
 
         self.scoring = {
             0: 0,

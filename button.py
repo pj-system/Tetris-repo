@@ -3,8 +3,8 @@ from settings import Settings
 
 
 class Button():
-    def __init__(self, tet_game, text) -> None:
-
+    def __init__(self, tet_game: object, text: str) -> None:
+        """Class creating game buttons"""
         # game window from main:
         self.screen = tet_game.screen
 
