@@ -21,29 +21,39 @@ class Tetris:
         # intitalise game window
         self.screen = pygame.display.set_mode(
             (self.WINDOW_WIDTH, self.WINDOW_HEIGHT))
-        pygame.display.set_caption("TETRIS")
+        pygame.display.set_caption("PJ's TETRIS")
 
+        # inicialise grid
         self.play_field = GameSpace(self)
-        self.block = Block(self)
-        self.next_block = Block(self)
-        self.saved_block = None
+
+        # initialise buttons
         self.play_button = Button(self, "PLAY")
+        self.restart_button = Button(self, "RESTART")
+        self.bot_button = Button(self, "RUN BOT (WIP)")
+        self.quit_button = Button(self, "QUIT")
+        # Button Array
+        self.buttons = [self.play_button, self.restart_button,
+                        self.bot_button, self.quit_button]
+        # Button spawn location Array
+        self.button_loc = [[660, 520], [660, 520], [660, 640], [660, 760]]
 
         # set user event to periodically lower the block and timer for block drop event
         self.drop_rate = settings.drop_rate
         self.accelerate_rate = settings.accelerate
         self.soft_drop_block = pygame.USEREVENT + 0
-        pygame.time.set_timer(self.soft_drop_block, self.drop_rate)
-
+        pygame.time.set_timer(self.soft_drop_block, 0)
         self.clock = pygame.time.Clock()
+        # Set UI font
         self.text_font = pygame.font.SysFont("arial", 30, True)
 
+        # Set state booleans
         self.can_save = True
         self.can_use_saved = True
 
+        # Initialise socre counter
         self.score = 0
-
-        self.game_active = True
+        # Start application in game inactive state
+        self.game_active = False
 
     def run_game(self):
         """Main loop of the game"""
@@ -53,20 +63,30 @@ class Tetris:
 
             # window background and UI
             self.screen.fill((0, 0, 0))
-
+            # Graphics render
             if self.game_active == True:
-                # Graphics render
+                # draw on-screen text
+                self.draw_text()
+                # draw game board (blocks placed)
                 self.play_field.draw_board()
+                # draw all blocks
                 self.block.draw()
-                # COME BACK TO THIS, coordinate needs to be calculated not stated!
                 self.next_block.draw_tetromino([120, 700])
                 if self.saved_block:
                     self.saved_block.draw_tetromino([360, 700])
+                # draw grid (grid lines)
+                self.play_field.draw_grid()
+                for pos, btn in enumerate(self.buttons):
+                    if btn != self.play_button:
+                        btn.draw(self.button_loc[pos], False)
             else:
-                self.play_button.draw([660, 520], False)
+                for pos, btn in enumerate(self.buttons):
+                    if btn != self.restart_button:
+                        btn.draw(self.button_loc[pos], False)
 
-            self.draw_text()
-            self.play_field.draw_grid()
+                self.draw_text()
+                self.play_field.draw_board()
+                self.play_field.draw_grid()
 
             # Refresh display at 60fps
             pygame.display.flip()
@@ -77,53 +97,76 @@ class Tetris:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
-            # Keyboard input
+            # Keyboard events:
             # key presses
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_q:
                     sys.exit()
-                if event.key == pygame.K_RIGHT:
-                    self.block.move(1)
-                if event.key == pygame.K_LEFT:
-                    self.block.move(-1)
-                if event.key == pygame.K_DOWN:
-                    self._accelerate_block()
-                if event.key == pygame.K_UP:
-                    self.block.rotate()
                 # Restart
                 if event.key == pygame.K_r:
                     self.reset()
-                if event.key == pygame.K_SPACE:
-                    self.drop_and_add_score()
-                    self._new_block()
-                if event.key == pygame.K_v:
-                    self.save_shape()
-                if event.key == pygame.K_b:
-                    self.use_saved_shape()
-            # key release
+                if self.game_active:
+                    # key presses:
+                    if event.key == pygame.K_RIGHT:
+                        self.block.move(1)
+                    if event.key == pygame.K_LEFT:
+                        self.block.move(-1)
+                    if event.key == pygame.K_DOWN:
+                        self._accelerate_block()
+                    if event.key == pygame.K_UP:
+                        self.block.rotate()
+                    if event.key == pygame.K_SPACE:
+                        self.drop_and_add_score()
+                        self._new_block()
+                    if event.key == pygame.K_v:
+                        self.save_shape()
+                    if event.key == pygame.K_b:
+                        self.use_saved_shape()
+            # key releases:
             if event.type == pygame.KEYUP:
-                if event.key == pygame.K_DOWN:
-                    self._decelerate_block()
-
+                if self.game_active:
+                    if event.key == pygame.K_DOWN:
+                        self._decelerate_block()
+            # Mouse events:
+            # Mouse hover:
             if event.type == pygame.MOUSEMOTION:
-                if self.play_button.button.collidepoint(pygame.mouse.get_pos()):
-                    self.play_button.button_border = 0
-                else:
-                    self.play_button.button_border = 10
-
+                for btn in self.buttons:
+                    if btn.button.collidepoint(pygame.mouse.get_pos()):
+                        btn.button_border = 0
+                    else:
+                        btn.button_border = 10
+            # Mouse presses:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.play_button.button.collidepoint(event.pos):
+                    self.play_game()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if self.restart_button.button.collidepoint(event.pos):
+                    self.reset()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if self.bot_button.button.collidepoint(event.pos):
+                    pass
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if self.quit_button.button.collidepoint(event.pos):
                     sys.exit()
 
-            # block drop on timer
-            if event.type == self.soft_drop_block:
-                if not self.block.update():
-                    self._add_to_grid()
-                    self.score += self.play_field.check_clear()
-                    self._new_block()
-                    self.can_save = True
-                    self.can_use_saved = True
-                    print(self.can_save)
+            # block drop on timer (USEREVENT 0)
+            if self.game_active:
+                if event.type == self.soft_drop_block:
+                    if not self.block.update():
+                        self._add_to_grid()
+                        self.score += self.play_field.check_clear()
+                        self._new_block()
+                        self.can_save = True
+                        self.can_use_saved = True
+                        #self.game_active = False
+
+    def play_game(self):
+        # initialise blocks
+        self.block = Block(self)
+        self.next_block = Block(self)
+        self.saved_block = None
+        pygame.time.set_timer(self.soft_drop_block, self.drop_rate)
+        self.game_active = True
 
     def reset(self):
         """Resets the game state to start start state (Restart)"""
@@ -192,10 +235,12 @@ class Tetris:
         self.can_use_saved = True
 
     def _new_block(self):
-        """Next_block goes into play and new next block is iniciated"""
+        """Next_block goes into play and new next block is iniciated.\n
+        If new block has no place to spawn, game ends"""
         self.block = self.next_block
         if not self.block._check_placed_collision(self.block.shape):
             self.game_active = False
+            pygame.time.set_timer(self.soft_drop_block, 0)
         self.next_block = Block(self)
 
 
