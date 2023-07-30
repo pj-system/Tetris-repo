@@ -102,9 +102,6 @@ class Tetris:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_q:
                     sys.exit()
-                # Restart
-                if event.key == pygame.K_r:
-                    self.reset()
                 if self.game_active:
                     # key presses:
                     if event.key == pygame.K_RIGHT:
@@ -122,6 +119,9 @@ class Tetris:
                         self.save_shape()
                     if event.key == pygame.K_b:
                         self.use_saved_shape()
+                    # Restart
+                    if event.key == pygame.K_r:
+                        self.reset()
             # key releases:
             if event.type == pygame.KEYUP:
                 if self.game_active:
