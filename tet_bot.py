@@ -2,6 +2,7 @@ class TetBot():
     def __init__(self, tet_game) -> None:
         pass
 
+    # generate all legal moves
     def generate_moves(self):
         pass
 
