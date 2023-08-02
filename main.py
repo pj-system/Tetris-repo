@@ -5,6 +5,7 @@ from game_blocks import Block
 from game_space import GameSpace
 from settings import Settings
 from button import Button
+from tet_bot import TetBot
 
 
 class Tetris:
@@ -14,6 +15,8 @@ class Tetris:
 
         pygame.init()
         settings = Settings()
+        # temp!!!!!!!!!
+        self.BOT = TetBot(self)
         # Game window size
         self.WINDOW_HEIGHT = settings.WINDOW_HEIGHT
         self.WINDOW_WIDTH = settings.WINDOW_WIDTH
@@ -122,6 +125,8 @@ class Tetris:
                     # Restart
                     if event.key == pygame.K_r:
                         self.reset()
+                    if event.key == pygame.K_p:
+                        self.BOT._evaluate_grid(self.play_field.grid)
             # key releases:
             if event.type == pygame.KEYUP:
                 if self.game_active:

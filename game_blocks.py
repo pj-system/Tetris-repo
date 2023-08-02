@@ -55,7 +55,7 @@ class Block:
         self.GRID_DRAW_DELTA = [0, settings.GRID_DRAW_DELTA]
 
         # pick a random shape and iniciate corresponding colour
-        self.r_selection = random.randint(1, 7)
+        self.r_selection = random.randint(1, 1)
         self.shape = self.SHAPES[self.r_selection]
         # shape without offset to the middle of the grid:
         self.shape_origin = [coor.copy() for coor in self.shape]
