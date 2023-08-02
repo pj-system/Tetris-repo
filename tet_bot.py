@@ -62,15 +62,16 @@ class TetBot():
                                     empty_pillar = row - edge_pillar_check + 1
                                     print(empty_pillar, '2')
                 else:
-                    edge_pillar_check = min(edge_pillar_check, row)
                     if top_block_reached == False:
+                        edge_pillar_check = min(edge_pillar_check, row)
+                        # if an edge column - check empty pillar height, will be negative if no pillar and later ignored
+                        if col == 0 or col == 9:
+                            empty_pillar = row - edge_pillar_check
                         top_block_reached = True
+
                         # counter intuative but since top of the grid starts at 0, max hight is the smallest number
                         max_height = min(max_height, row)
-                    # if an edge column - check empty pillar height, will be negative if no pillar and later ignored
-                    if col == 0 or col == 9:
-                        empty_pillar = row - edge_pillar_check
-                        print(empty_pillar, '3')
+
             # any pillars over 2 in height are added to the empty pillar list
             if empty_pillar > 2:
                 empty_pillars.append(empty_pillar)
