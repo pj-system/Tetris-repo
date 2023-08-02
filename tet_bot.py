@@ -24,7 +24,7 @@ class TetBot():
         """Completes the set of inputs requitred to make the best move in game"""
         pass
 
-    def _evaluate_grid(self, grid: list):
+    def _evaluate_grid(self, grid: list[list]):
         """Checks for number of gaps created for a given position\n
         A gap is defined as a spece on a grid with which has a block above it but is not it self filled\n
         Checks for columns\n
@@ -38,37 +38,40 @@ class TetBot():
             # reset top block reached indicator for column and empty pillar height
             top_block_reached = False
             empty_pillar = 0
+            # top of filled adjacent col to the edge column - set to bottom inicially
             edge_pillar_check = 21
             for row in range(self.GRID_HEIGHT):
+                # if the current cell is empty it is either to be ignored or a gap or a part of an empty pillar
                 if grid[row][col] == (0, 0, 0):
                     # if cell is empty and we had a block above, it is a gap
                     if top_block_reached == True:
                         gaps += 1
                     # if we haven't had a block in the column yet we check for pillars:
-                    elif col != 0 and col != 9:
+                    elif col != 0 and col != 9:  # non edge columns
                         if grid[row][col - 1] != (0, 0, 0) or grid[row][col + 1] != (0, 0, 0):
                             empty_pillar += 1
                     else:
                         if col == 0:
                             if grid[row][col + 1] != (0, 0, 0):
+                                # if adjacant column has blocks placed higher, we have an empty pillar situation
                                 edge_pillar_check = min(edge_pillar_check, row)
                                 if row == 21:
                                     empty_pillar = row - edge_pillar_check + 1
-                                    print(empty_pillar, '1')
                         else:  # column must be == 9
                             if grid[row][col - 1] != (0, 0, 0):
+                                # if adjacant column has blocks placed higher, we have an empty pillar situation
                                 edge_pillar_check = min(edge_pillar_check, row)
                                 if row == 21:
                                     empty_pillar = row - edge_pillar_check + 1
-                                    print(empty_pillar, '2')
+                # if not empty, then it may be the first block in a column (iniciates gap counting), just a space or a bottom of an empty pillar
                 else:
+
                     if top_block_reached == False:
                         edge_pillar_check = min(edge_pillar_check, row)
                         # if an edge column - check empty pillar height, will be negative if no pillar and later ignored
                         if col == 0 or col == 9:
                             empty_pillar = row - edge_pillar_check
                         top_block_reached = True
-
                         # counter intuative but since top of the grid starts at 0, max hight is the smallest number
                         max_height = min(max_height, row)
 
