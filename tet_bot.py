@@ -12,11 +12,27 @@ class TetBot():
 
         #self.grid = self.playfield.grid
 
-    def generate_moves(self):
+    def generate_moves(self, grid: list[list], block: list) -> list[list]:
         """Generates all possible moves for a given block"""
-        pass
 
-    def calculate_move(self, move: list):
+        moves = []
+
+        # find the left most position of the block
+        current_left_most = min(coor[1] for coor in block)
+
+        # set block to the left most position on the grid
+        if current_left_most != 0:
+            legal_offset = 0
+            for step in range(1, current_left_most + 1):
+                next_coor = current_left_most - step
+            for coor in block:
+                coor[1] -= current_left_most
+
+        for col in range(self.GRID_WIDTH):
+            pass
+        return moves
+
+    def calculate_move(self, move: list) -> float:
         """Checks quality of a given move"""
         pass
 
@@ -80,4 +96,4 @@ class TetBot():
                 empty_pillars.append(empty_pillar)
                 empty_pillar = 0
 
-        return print([gaps, empty_pillars, max_height])
+        return [gaps, empty_pillars, max_height]
