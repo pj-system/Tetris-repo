@@ -17,19 +17,22 @@ class TetBot():
 
         moves = []
 
-        # find the left most position of the block
-        current_left_most = min(coor[1] for coor in block)
+        free_space = True
+        legal_offset_left = 0
 
-        # set block to the left most position on the grid
-        if current_left_most != 0:
-            legal_offset = 0
-            for step in range(1, current_left_most + 1):
-                next_coor = current_left_most - step
+        # Find left most position
+        while free_space == True:
             for coor in block:
-                coor[1] -= current_left_most
+                if coor[1] - 1 < 0 or block[coor[0]][coor[1] - 1] != (0, 0, 0):
+                    free_space = False
+                    break
+                else:
+                    legal_offset_left += 1
 
-        for col in range(self.GRID_WIDTH):
-            pass
+        # set block to first legal left most position
+        for coor in block:
+            coor[1] = coor[1] - legal_offset_left
+
         return moves
 
     def calculate_move(self, move: list) -> float:
