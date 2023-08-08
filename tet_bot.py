@@ -12,7 +12,7 @@ class TetBot():
 
         #self.grid = self.playfield.grid
 
-    def generate_moves(self, grid: list[list], block: list) -> list[list]:
+    def generate_moves(self, grid: list[list], block: list[list]) -> list[list]:
         """Generates all possible moves for a given block"""
 
         moves = []
@@ -21,17 +21,19 @@ class TetBot():
         legal_offset_left = 0
 
         # Find left most position
-        while free_space == True:
-            for coor in block:
-                if coor[1] - 1 < 0 or block[coor[0]][coor[1] - 1] != (0, 0, 0):
-                    free_space = False
-                    break
-                else:
-                    legal_offset_left += 1
+        while self._free_space('left', block) == True:
+            legal_offset_left += 1
 
         # set block to first legal left most position
         for coor in block:
             coor[1] = coor[1] - legal_offset_left
+
+        for col in range(legal_offset_left):
+            check_block = [coor.copy() for coor in block]
+
+            free_space_down = True
+            while free_space_down == True:
+                for coor in block:
 
         return moves
 
@@ -100,3 +102,22 @@ class TetBot():
                 empty_pillar = 0
 
         return [gaps, empty_pillars, max_height]
+
+    def _free_space(self, block, direction):
+        if direction == 'left' or direction == 'right':
+            if direction == 'left':
+                delta = -1
+            else:
+                delta = 1
+            for coor in block:
+                if coor[1] + delta < 0 or coor[1] + delta > self.GRID_WIDTH - 1 or block[coor[0]][coor[1] + delta] != (0, 0, 0):
+                    return False
+            return True
+
+        elif direction == 'down':
+            for coor in block:
+                if coor[1] + 1 > self.GRID_HEIGHT - 1 or block[coor[0] + 1][coor[1]] != (0, 0, 0):
+                    return False
+            return True
+        else:
+            raise ValueError('direction needs to be: left, right or down')
