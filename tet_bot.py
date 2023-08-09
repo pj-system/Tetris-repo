@@ -15,8 +15,6 @@ class TetBot():
     def generate_moves(self, grid: list[list], block: list[list]) -> list[list]:
         """Generates all possible moves for a given block"""
 
-        moves = []
-
         free_space = True
         legal_offset_left = 0
 
@@ -28,12 +26,16 @@ class TetBot():
         for coor in block:
             coor[1] = coor[1] - legal_offset_left
 
-        for col in range(legal_offset_left):
-            check_block = [coor.copy() for coor in block]
+        moves = []
 
-            free_space_down = True
-            while free_space_down == True:
-                for coor in block:
+        for col in range(legal_offset_left + 1):
+            check_block = [coor.copy() for coor in block]
+            # generate move sequence to get block into postion from the start position
+            move = [1 for _ in range(legal_offset_left - col)]
+            # move the block down until another block reached or grid bottom reached
+            while self._free_space('down', check_block) == True:
+                self._move_block('down', check_block)
+                move.append(2)
 
         return moves
 
@@ -104,6 +106,7 @@ class TetBot():
         return [gaps, empty_pillars, max_height]
 
     def _free_space(self, block, direction):
+        """Checks if free space is available for a given translation"""
         if direction == 'left' or direction == 'right':
             if direction == 'left':
                 delta = -1
@@ -121,3 +124,20 @@ class TetBot():
             return True
         else:
             raise ValueError('direction needs to be: left, right or down')
+
+    def _move_block(self, direction, block):
+        """Moves the block in a given direction"""
+        if direction == 'left':
+            idx = 1
+            delta = -1
+        elif direction == 'right':
+            idx = 1
+            delta = 1
+        elif direction == 'down':
+            idx = 0
+            delta = 1
+        else:
+            raise ValueError('direction needs to be: left, right or down')
+
+        for coor in block:
+            coor[idx] = coor[idx] + delta
