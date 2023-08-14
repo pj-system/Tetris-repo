@@ -15,7 +15,6 @@ class TetBot():
     def generate_moves(self, grid: list[list], block: list[list]) -> list[list]:
         """Generates all possible moves for a given block"""
 
-        free_space = True
         legal_offset_left = 0
 
         # Find left most position
@@ -31,11 +30,36 @@ class TetBot():
         for col in range(legal_offset_left + 1):
             check_block = [coor.copy() for coor in block]
             # generate move sequence to get block into postion from the start position
-            move = [1 for _ in range(legal_offset_left - col)]
+            move = [[1 for _ in range(legal_offset_left - col)]]
             # move the block down until another block reached or grid bottom reached
             while self._free_space('down', check_block) == True:
                 self._move_block('down', check_block)
-                move.append(2)
+                move[0].append(2)
+            moves.append(move)
+            # declare a new check grid (copy of grid)
+            check_grid = [item.copy for item in grid]
+            # add final block position to check grid
+            for coor in check_block:
+                check_grid[coor[0]][coor[1]] = (255, 255, 255)
+            # evaluate position quality and add to the moves list
+            eval = self._evaluate_grid(check_grid)
+            move.append(eval)
+            # check if shuffling the blcok left or right is possible and evaluate the positions if so
+            if self._free_space('left', check_block):
+                self._move_block('left', check_block)
+                check_grid = [item.copy for item in grid]
+                for coor in check_block:
+                    check_grid[coor[0]][coor[1]] = (255, 255, 255)
+                self._evaluate_grid(check_grid)
+                self._move_block('right', check_block)
+
+            if self._free_space('right', check_block):
+                self._move_block('right', check_block)
+                check_grid = [item.copy for item in grid]
+                for coor in check_block:
+                    check_grid[coor[0]][coor[1]] = (255, 255, 255)
+                self._evaluate_grid(check_grid)
+                self._move_block('left', check_block)
 
         return moves
 
