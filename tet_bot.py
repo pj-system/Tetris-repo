@@ -1,16 +1,20 @@
 from settings import Settings
+import pygame
+import time
 
 
 class TetBot():
     def __init__(self, tet_game: object) -> None:
         settings = Settings()
 
-        #self.playfield = tet_game.playfield
-
         self.GRID_HEIGHT = settings.GRID_HEIGHT
         self.GRID_WIDTH = settings.GRID_WIDTH
 
-        #self.grid = self.playfield.grid
+        # for draw (visual) test
+        self.screen = tet_game.screen
+        self.CELL_SIZE = settings.CELL_SIZE
+        self.GRID_DRAW_DELTA = settings.GRID_DRAW_DELTA  # same as game_space
+        self.col_range_l_main = self.GRID_DRAW_DELTA  # same as game_space
 
     def generate_moves(self, grid: list[list], block: list[list]) -> list[list]:
         """Generates all possible moves for a given block"""
@@ -18,9 +22,11 @@ class TetBot():
         legal_offset_left = 0
 
         # Find left most position
-        while self._free_space('left', block) == True:
-            legal_offset_left += 1
+        check_block = [coor.copy() for coor in block]
 
+        while self._free_space('left', check_block, grid) == True:
+            legal_offset_left += 1
+            self._move_block('left', check_block)
         # set block to first legal left most position
         for coor in block:
             coor[1] = coor[1] - legal_offset_left
@@ -31,35 +37,51 @@ class TetBot():
             check_block = [coor.copy() for coor in block]
             # generate move sequence to get block into postion from the start position
             move = [[1 for _ in range(legal_offset_left - col)]]
+
+            # declare a new check grid (copy()of grid)
+            check_grid = [item.copy() for item in grid]
             # move the block down until another block reached or grid bottom reached
-            while self._free_space('down', check_block) == True:
+            while self._free_space('down', check_block, check_grid) == True:
                 self._move_block('down', check_block)
                 move[0].append(2)
-            moves.append(move)
-            # declare a new check grid (copy of grid)
-            check_grid = [item.copy for item in grid]
+
             # add final block position to check grid
             for coor in check_block:
                 check_grid[coor[0]][coor[1]] = (255, 255, 255)
+
             # evaluate position quality and add to the moves list
             eval = self._evaluate_grid(check_grid)
             move.append(eval)
-            # check if shuffling the blcok left or right is possible and evaluate the positions if so
-            if self._free_space('left', check_block):
-                self._move_block('left', check_block)
-                check_grid = [item.copy for item in grid]
-                for coor in check_block:
-                    check_grid[coor[0]][coor[1]] = (255, 255, 255)
-                self._evaluate_grid(check_grid)
-                self._move_block('right', check_block)
+            moves.append(move)
 
-            if self._free_space('right', check_block):
-                self._move_block('right', check_block)
-                check_grid = [item.copy for item in grid]
+            # FOR TESTING
+            self._draw_gird_test(check_grid)
+            time.sleep(0.5)
+
+            # check if shuffling the blcok left or right is possible and evaluate the positions if so
+            check_grid = [item.copy()for item in grid]
+            if self._free_space('left', check_block, check_grid):
+                self._move_block('left', check_block)
                 for coor in check_block:
                     check_grid[coor[0]][coor[1]] = (255, 255, 255)
-                self._evaluate_grid(check_grid)
+                eval = self._evaluate_grid(check_grid)
+                self._move_block('right', check_block)
+                move.append(eval)
+                moves.append(move)
+                self._draw_gird_test(check_grid)
+                time.sleep(0.5)
+
+            check_grid = [item.copy()for item in grid]
+            if self._free_space('right', check_block, check_grid):
+                self._move_block('right', check_block)
+                for coor in check_block:
+                    check_grid[coor[0]][coor[1]] = (255, 255, 255)
+                eval = self._evaluate_grid(check_grid)
                 self._move_block('left', check_block)
+                move.append(eval)
+                moves.append(move)
+                self._draw_gird_test(check_grid)
+                time.sleep(0.5)
 
         return moves
 
@@ -129,7 +151,7 @@ class TetBot():
 
         return [gaps, empty_pillars, max_height]
 
-    def _free_space(self, block, direction):
+    def _free_space(self, direction, block, grid):
         """Checks if free space is available for a given translation"""
         if direction == 'left' or direction == 'right':
             if direction == 'left':
@@ -137,13 +159,17 @@ class TetBot():
             else:
                 delta = 1
             for coor in block:
-                if coor[1] + delta < 0 or coor[1] + delta > self.GRID_WIDTH - 1 or block[coor[0]][coor[1] + delta] != (0, 0, 0):
+                row = coor[0]
+                col = coor[1]
+                if col + delta < 0 or col + delta > self.GRID_WIDTH - 1 or grid[row][col + delta] != (0, 0, 0):
                     return False
             return True
 
         elif direction == 'down':
             for coor in block:
-                if coor[1] + 1 > self.GRID_HEIGHT - 1 or block[coor[0] + 1][coor[1]] != (0, 0, 0):
+                row = coor[0]
+                col = coor[1]
+                if row + 1 >= self.GRID_HEIGHT or grid[row + 1][col] != (0, 0, 0):
                     return False
             return True
         else:
@@ -165,3 +191,14 @@ class TetBot():
 
         for coor in block:
             coor[idx] = coor[idx] + delta
+
+    def _draw_gird_test(self, grid):
+        # draw each cell of the grid in the appropriate colour
+        for row in range(0, self.GRID_HEIGHT):
+
+            for col in range(0, self.GRID_WIDTH):
+                cell = pygame.Rect(self.col_range_l_main + col * self.CELL_SIZE, row *
+                                   self.CELL_SIZE, self.CELL_SIZE, self.CELL_SIZE)
+                pygame.draw.rect(
+                    self.screen, grid[row][col], cell)
+        pygame.display.flip()

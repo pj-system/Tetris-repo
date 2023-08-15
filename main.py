@@ -15,8 +15,6 @@ class Tetris:
 
         pygame.init()
         settings = Settings()
-        # temp!!!!!!!!!
-        self.BOT = TetBot(self)
         # Game window size
         self.WINDOW_HEIGHT = settings.WINDOW_HEIGHT
         self.WINDOW_WIDTH = settings.WINDOW_WIDTH
@@ -25,6 +23,9 @@ class Tetris:
         self.screen = pygame.display.set_mode(
             (self.WINDOW_WIDTH, self.WINDOW_HEIGHT))
         pygame.display.set_caption("PJ's TETRIS")
+
+        # temp!!!!!!!!!
+        self.BOT = TetBot(self)
 
         # inicialise grid
         self.play_field = GameSpace(self)
@@ -125,8 +126,12 @@ class Tetris:
                     # Restart
                     if event.key == pygame.K_r:
                         self.reset()
+                    # FOR TESTING ONLY
                     if event.key == pygame.K_p:
                         self.BOT._evaluate_grid(self.play_field.grid)
+                    if event.key == pygame.K_t:
+                        self.BOT.generate_moves(
+                            self.play_field.grid, self.block.shape)
             # key releases:
             if event.type == pygame.KEYUP:
                 if self.game_active:
