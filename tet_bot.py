@@ -83,6 +83,8 @@ class TetBot():
                 self._draw_gird_test(check_grid)
                 time.sleep(0.5)
 
+            self._move_block('right', block)
+
         return moves
 
     def calculate_move(self, move: list) -> float:
