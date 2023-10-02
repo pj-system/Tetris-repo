@@ -1,5 +1,6 @@
 import sys
 import pygame
+import copy
 
 from game_blocks import Block
 from game_space import GameSpace
@@ -115,7 +116,7 @@ class Tetris:
                     if event.key == pygame.K_DOWN:
                         self._accelerate_block()
                     if event.key == pygame.K_UP:
-                        self.block.rotate()
+                        self.block.rotate(True)
                     if event.key == pygame.K_SPACE:
                         self.drop_and_add_score()
                         self._new_block()
@@ -131,7 +132,7 @@ class Tetris:
                         self.BOT._evaluate_grid(self.play_field.grid)
                     if event.key == pygame.K_t:
                         self.BOT.generate_moves(
-                            self.play_field.grid, self.block.shape)
+                            self.play_field.grid, self.block)
             # key releases:
             if event.type == pygame.KEYUP:
                 if self.game_active:

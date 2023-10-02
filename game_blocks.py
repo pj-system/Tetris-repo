@@ -72,7 +72,7 @@ class Block:
         self.screen = tet_game.screen
         self.grid = tet_game.play_field.grid
 
-    def rotate(self):
+    def rotate(self, actionable):
         """Rotates the piece in play"""
 
         # Do nothing if shape is an O
@@ -125,8 +125,12 @@ class Block:
                     self.shape = test_rotation_shape
                     return
             return
-        self.shape = rotation_shape
-        return
+
+        if actionable:
+            self.shape = rotation_shape
+            return
+        else:
+            return rotation_shape
 
     def draw(self):
         """class responisble for drawing block currently in play onto the screen"""

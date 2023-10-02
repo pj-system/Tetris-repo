@@ -1,6 +1,7 @@
 from settings import Settings
 import pygame
 import time
+import copy
 
 
 class TetBot():
@@ -12,12 +13,15 @@ class TetBot():
 
         # for draw (visual) test
         self.screen = tet_game.screen
+
         self.CELL_SIZE = settings.CELL_SIZE
         self.GRID_DRAW_DELTA = settings.GRID_DRAW_DELTA  # same as game_space
         self.col_range_l_main = self.GRID_DRAW_DELTA  # same as game_space
 
-    def generate_moves(self, grid: list[list], block: list[list]) -> list[list]:
+    def generate_moves(self, grid: list[list], tertramino: object) -> list[list]:
         """Generates all possible moves for a given block"""
+
+        block = [coor.copy() for coor in tertramino.shape]
 
         legal_offset_left = 0
 
@@ -58,30 +62,30 @@ class TetBot():
             self._draw_gird_test(check_grid)
             time.sleep(0.5)
 
-            # check if shuffling the blcok left or right is possible and evaluate the positions if so
-            check_grid = [item.copy()for item in grid]
-            if self._free_space('left', check_block, check_grid):
-                self._move_block('left', check_block)
-                for coor in check_block:
-                    check_grid[coor[0]][coor[1]] = (255, 255, 255)
-                eval = self._evaluate_grid(check_grid)
-                self._move_block('right', check_block)
-                move.append(eval)
-                moves.append(move)
-                self._draw_gird_test(check_grid)
-                time.sleep(0.5)
+            # # check if shuffling the blcok left or right is possible and evaluate the positions if so
+            # check_grid = [item.copy()for item in grid]
+            # if self._free_space('left', check_block, check_grid):
+            #     self._move_block('left', check_block)
+            #     for coor in check_block:
+            #         check_grid[coor[0]][coor[1]] = (255, 255, 255)
+            #     eval = self._evaluate_grid(check_grid)
+            #     self._move_block('right', check_block)
+            #     move.append(eval)
+            #     moves.append(move)
+            #     self._draw_gird_test(check_grid)
+            #     time.sleep(0.5)
 
-            check_grid = [item.copy()for item in grid]
-            if self._free_space('right', check_block, check_grid):
-                self._move_block('right', check_block)
-                for coor in check_block:
-                    check_grid[coor[0]][coor[1]] = (255, 255, 255)
-                eval = self._evaluate_grid(check_grid)
-                self._move_block('left', check_block)
-                move.append(eval)
-                moves.append(move)
-                self._draw_gird_test(check_grid)
-                time.sleep(0.5)
+            # check_grid = [item.copy()for item in grid]
+            # if self._free_space('right', check_block, check_grid):
+            #     self._move_block('right', check_block)
+            #     for coor in check_block:
+            #         check_grid[coor[0]][coor[1]] = (255, 255, 255)
+            #     eval = self._evaluate_grid(check_grid)
+            #     self._move_block('left', check_block)
+            #     move.append(eval)
+            #     moves.append(move)
+            #     self._draw_gird_test(check_grid)
+            #     time.sleep(0.5)
 
             self._move_block('right', block)
 
