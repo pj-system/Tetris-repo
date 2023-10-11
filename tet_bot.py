@@ -21,74 +21,66 @@ class TetBot():
     def generate_moves(self, grid: list[list], tertramino: object) -> list[list]:
         """Generates all possible moves for a given block"""
 
+        # clears the space in a given block positon on the grid
+        def clear_grid(grid, last_block_position):
+            for coor in last_block_position:
+                grid[coor[0]][coor[1]] = (0, 0, 0)
+
+        # adds positions taken up by placed blocks to the grid
+        def add_to_grid(grid, block_position):
+            for coor in block_position:
+                grid[coor[0]][coor[1]] = (255, 255, 255)
+
         block = [coor.copy() for coor in tertramino.shape]
 
-        legal_offset_left = 0
+        # setting variables defining move generation limits
+        legal_offset_left, legal_offset_right = 0, 0
+        count_left, count_right = 1, 1
 
         # Find left most position
-        check_block = [coor.copy() for coor in block]
+        #check_block = [coor.copy() for coor in block]
 
-        while self._free_space('left', check_block, grid) == True:
+        # check lateral movement limits (how far right or left the tetramino can go) to define move generation limits
+        while self._free_space('left', block, grid, increment=count_left) == True:
             legal_offset_left += 1
-            self._move_block('left', check_block)
+            count_left += 1
+        while self._free_space('right', block, grid, increment=count_right) == True:
+            legal_offset_right += 1
+            count_right += 1
+
         # set block to first legal left most position
         for coor in block:
             coor[1] = coor[1] - legal_offset_left
 
+        check_range = legal_offset_left + legal_offset_right
+
+        # inicialise moves array
         moves = []
 
-        for col in range(legal_offset_left + 1):
+        for col in range(check_range + 1):
+
             check_block = [coor.copy() for coor in block]
-            # generate move sequence to get block into postion from the start position
-            move = [[1 for _ in range(legal_offset_left - col)]]
 
             # declare a new check grid (copy()of grid)
             check_grid = [item.copy() for item in grid]
             # move the block down until another block reached or grid bottom reached
             while self._free_space('down', check_block, check_grid) == True:
                 self._move_block('down', check_block)
-                move[0].append(2)
 
             # add final block position to check grid
-            for coor in check_block:
-                check_grid[coor[0]][coor[1]] = (255, 255, 255)
-
+            add_to_grid(check_grid, check_block)
             # evaluate position quality and add to the moves list
             eval = self._evaluate_grid(check_grid)
-            move.append(eval)
-            moves.append(move)
+            # clear the grid
+            clear_grid(check_grid, check_block)
 
             # FOR TESTING
-            self._draw_gird_test(check_grid)
+            self._draw_grid_test(check_grid)
             time.sleep(0.5)
-
-            # # check if shuffling the blcok left or right is possible and evaluate the positions if so
-            # check_grid = [item.copy()for item in grid]
-            # if self._free_space('left', check_block, check_grid):
-            #     self._move_block('left', check_block)
-            #     for coor in check_block:
-            #         check_grid[coor[0]][coor[1]] = (255, 255, 255)
-            #     eval = self._evaluate_grid(check_grid)
-            #     self._move_block('right', check_block)
-            #     move.append(eval)
-            #     moves.append(move)
-            #     self._draw_gird_test(check_grid)
-            #     time.sleep(0.5)
-
-            # check_grid = [item.copy()for item in grid]
-            # if self._free_space('right', check_block, check_grid):
-            #     self._move_block('right', check_block)
-            #     for coor in check_block:
-            #         check_grid[coor[0]][coor[1]] = (255, 255, 255)
-            #     eval = self._evaluate_grid(check_grid)
-            #     self._move_block('left', check_block)
-            #     move.append(eval)
-            #     moves.append(move)
-            #     self._draw_gird_test(check_grid)
-            #     time.sleep(0.5)
 
             self._move_block('right', block)
 
+        # print(moves)
         return moves
 
     def calculate_move(self, move: list) -> float:
@@ -157,13 +149,13 @@ class TetBot():
 
         return [gaps, empty_pillars, max_height]
 
-    def _free_space(self, direction, block, grid):
+    def _free_space(self, direction, block, grid, increment=1):
         """Checks if free space is available for a given translation"""
         if direction == 'left' or direction == 'right':
             if direction == 'left':
-                delta = -1
+                delta = -increment
             else:
-                delta = 1
+                delta = increment
             for coor in block:
                 row = coor[0]
                 col = coor[1]
@@ -175,30 +167,30 @@ class TetBot():
             for coor in block:
                 row = coor[0]
                 col = coor[1]
-                if row + 1 >= self.GRID_HEIGHT or grid[row + 1][col] != (0, 0, 0):
+                if row + 1 >= self.GRID_HEIGHT or grid[row + increment][col] != (0, 0, 0):
                     return False
             return True
         else:
             raise ValueError('direction needs to be: left, right or down')
 
-    def _move_block(self, direction, block):
+    def _move_block(self, direction, block, increment=1):
         """Moves the block in a given direction"""
         if direction == 'left':
             idx = 1
-            delta = -1
+            delta = -increment
         elif direction == 'right':
             idx = 1
-            delta = 1
+            delta = increment
         elif direction == 'down':
             idx = 0
-            delta = 1
+            delta = increment
         else:
             raise ValueError('direction needs to be: left, right or down')
 
         for coor in block:
             coor[idx] = coor[idx] + delta
 
-    def _draw_gird_test(self, grid):
+    def _draw_grid_test(self, grid):
         # draw each cell of the grid in the appropriate colour
         for row in range(0, self.GRID_HEIGHT):
 

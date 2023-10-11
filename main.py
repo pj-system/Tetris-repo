@@ -45,8 +45,8 @@ class Tetris:
         # set user event to periodically lower the block and timer for block drop event
         self.drop_rate = settings.drop_rate
         self.accelerate_rate = settings.accelerate
-        self.soft_drop_block = pygame.USEREVENT + 0
-        pygame.time.set_timer(self.soft_drop_block, 0)
+        self.block_drop_event = pygame.USEREVENT + 0
+        pygame.time.set_timer(self.block_drop_event, 0)
         self.clock = pygame.time.Clock()
         # Set UI font
         self.text_font = pygame.font.SysFont("arial", 30, True)
@@ -131,8 +131,11 @@ class Tetris:
                     if event.key == pygame.K_p:
                         self.BOT._evaluate_grid(self.play_field.grid)
                     if event.key == pygame.K_t:
+                        pygame.time.set_timer(self.block_drop_event, 0)
                         self.BOT.generate_moves(
                             self.play_field.grid, self.block)
+                        pygame.time.set_timer(
+                            self.block_drop_event, self.drop_rate)
             # key releases:
             if event.type == pygame.KEYUP:
                 if self.game_active:
@@ -162,7 +165,7 @@ class Tetris:
 
             # block drop on timer (USEREVENT 0)
             if self.game_active:
-                if event.type == self.soft_drop_block:
+                if event.type == self.block_drop_event:
                     if not self.block.update():
                         self._add_to_grid()
                         self.score += self.play_field.check_clear()
@@ -176,7 +179,7 @@ class Tetris:
         self.block = Block(self)
         self.next_block = Block(self)
         self.saved_block = None
-        pygame.time.set_timer(self.soft_drop_block, self.drop_rate)
+        pygame.time.set_timer(self.block_drop_event, self.drop_rate)
         self.game_active = True
 
     def reset(self):
@@ -229,11 +232,11 @@ class Tetris:
 
     def _accelerate_block(self):
         """increases soft drop rate of the block"""
-        pygame.time.set_timer(self.soft_drop_block, self.accelerate_rate)
+        pygame.time.set_timer(self.block_drop_event, self.accelerate_rate)
 
     def _decelerate_block(self):
         """decreases soft drop rate to baseline"""
-        pygame.time.set_timer(self.soft_drop_block, self.drop_rate)
+        pygame.time.set_timer(self.block_drop_event, self.drop_rate)
 
     def drop_and_add_score(self):
         """Drops the block to the lowest possible position and tallies up the score if clear(s) achieved"""
@@ -251,7 +254,7 @@ class Tetris:
         self.block = self.next_block
         if not self.block._check_placed_collision(self.block.shape):
             self.game_active = False
-            pygame.time.set_timer(self.soft_drop_block, 0)
+            pygame.time.set_timer(self.block_drop_event, 0)
         self.next_block = Block(self)
 
 
